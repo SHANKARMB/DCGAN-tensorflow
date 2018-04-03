@@ -75,7 +75,7 @@ class DCGAN(object):
         self.dataset_name = dataset_name
         self.input_fname_pattern = input_fname_pattern
         self.checkpoint_dir = checkpoint_dir
-        # print('Checkpoint dir: is... ', self.checkpoint_dir)
+        print('Checkpoint dir: is... ', self.checkpoint_dir)
         if self.dataset_name == 'mnist':
             self.data_X, self.data_y = self.load_mnist()
             self.c_dim = self.data_X[0].shape[-1]
@@ -506,7 +506,7 @@ class DCGAN(object):
     def save(self, checkpoint_dir, step):
         model_name = "DCGAN.model"
         checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
-        # print("checkpoint_dir..: ", checkpoint_dir)
+        print("checkpoint_dir..: ", checkpoint_dir)
 
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
@@ -519,7 +519,7 @@ class DCGAN(object):
         import re
         print(" [*] Reading checkpoints...")
         checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
-        # print('checkpoint_dir: ',checkpoint_dir)
+        print('checkpoint_dir: ',checkpoint_dir)
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
             ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
