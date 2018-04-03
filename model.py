@@ -74,7 +74,7 @@ class DCGAN(object):
         self.dataset_name = dataset_name
         self.input_fname_pattern = input_fname_pattern
         self.checkpoint_dir = checkpoint_dir
-        print('Checkpoint dir: ', self.checkpoint_dir)
+        print('Checkpoint dir: is... ', self.checkpoint_dir)
         if self.dataset_name == 'mnist':
             self.data_X, self.data_y = self.load_mnist()
             self.c_dim = self.data_X[0].shape[-1]
@@ -505,26 +505,28 @@ class DCGAN(object):
     def save(self, checkpoint_dir, step):
         model_name = "DCGAN.model"
         checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
+        print("checkpoint_dir..: ", checkpoint_dir)
 
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
 
         self.saver.save(self.sess,
-                        os.path.join(base_dir, checkpoint_dir, model_name),
+                        os.path.join(checkpoint_dir, model_name),
                         global_step=step)
 
     def load(self, checkpoint_dir):
         import re
         print(" [*] Reading checkpoints...")
         checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
-
+        print('checkpoint_dir: ',checkpoint_dir)
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
             ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-            self.saver.restore(self.sess, os.path.join(base_dir, checkpoint_dir, ckpt_name))
+            self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
             counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
             print(" [*] Success to read {}".format(ckpt_name))
             return True, counter
         else:
             print(" [*] Failed to find a checkpoint")
             return False, 0
+
