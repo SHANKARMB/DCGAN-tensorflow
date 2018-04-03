@@ -10,6 +10,8 @@ from six.moves import xrange
 from ops import *
 from utils import *
 
+base_dir = "/home/prime/ProjectWork/training/"
+
 
 def conv_out_size_same(size, stride):
     return int(math.ceil(float(size) / float(stride)))
@@ -20,7 +22,7 @@ class DCGAN(object):
                  batch_size=64, sample_num=64, output_height=256, output_width=256,
                  y_dim=None, z_dim=100, gf_dim=64, df_dim=64,
                  gfc_dim=1024, dfc_dim=1024, c_dim=3, dataset_name='default',
-                 input_fname_pattern='*.jpg', checkpoint_dir=None, sample_dir=None):
+                 input_fname_pattern='*.jpg', checkpoint_dir=None, sample_dir=None, dataset_dir=None):
         """
 
     Args:
@@ -34,6 +36,7 @@ class DCGAN(object):
       dfc_dim: (optional) Dimension of discrim units for fully connected layer. [1024]
       c_dim: (optional) Dimension of image color. For grayscale input, set to 1. [3]
     """
+        self.dataset_dir = dataset_dir
         self.sess = sess
         self.crop = crop
 
@@ -71,15 +74,15 @@ class DCGAN(object):
         self.dataset_name = dataset_name
         self.input_fname_pattern = input_fname_pattern
         self.checkpoint_dir = checkpoint_dir
-        print('Checkpoint dir: ',self.checkpoint_dir)
+        print('Checkpoint dir: ', self.checkpoint_dir)
         if self.dataset_name == 'mnist':
             self.data_X, self.data_y = self.load_mnist()
             self.c_dim = self.data_X[0].shape[-1]
         else:
-            self.data = glob(os.path.join("/home/prime/ProjectWork/training/dataset/matched_images/", self.dataset_name,
+            self.data = glob(os.path.join(base_dir, self.dataset_dir, self.dataset_name,
                                           self.input_fname_pattern))
             imreadImg = imread(self.data[0])
-            print('path: ',self.data[0])
+            print('path: ', self.data[0])
             if len(imreadImg.shape) >= 3:  # check if image is a non-grayscale image by checking channel number
                 self.c_dim = imread(self.data[0]).shape[-1]
             else:
@@ -196,7 +199,8 @@ class DCGAN(object):
                 batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
             else:
                 self.data = glob(os.path.join(
-                    "/home/prime/ProjectWork/training/dataset/matched_images/", config.dataset, self.input_fname_pattern))
+                    base_dir, self.dataset_dir, config.dataset,
+                    self.input_fname_pattern))
                 batch_idxs = min(len(self.data), config.train_size) // config.batch_size
 
             for idx in xrange(0, batch_idxs):
@@ -500,24 +504,24 @@ class DCGAN(object):
 
     def save(self, checkpoint_dir, step):
         model_name = "DCGAN.model"
-        checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
+        checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
 
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
 
         self.saver.save(self.sess,
-                        os.path.join(checkpoint_dir, model_name),
+                        os.path.join(base_dir, checkpoint_dir, model_name),
                         global_step=step)
 
     def load(self, checkpoint_dir):
         import re
         print(" [*] Reading checkpoints...")
-        checkpoint_dir = os.path.join(checkpoint_dir, self.model_dir)
+        checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
 
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
             ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
-            self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
+            self.saver.restore(self.sess, os.path.join(base_dir, checkpoint_dir, ckpt_name))
             counter = int(next(re.finditer("(\d+)(?!.*\d)", ckpt_name)).group(0))
             print(" [*] Success to read {}".format(ckpt_name))
             return True, counter

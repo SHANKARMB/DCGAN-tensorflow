@@ -7,7 +7,7 @@ from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
 
 flags = tf.app.flags
-flags.DEFINE_integer("epoch", 200, "Epoch to train [25]")
+flags.DEFINE_integer("epoch", 1000, "Epoch to train [25]")
 flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]")
 flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_float("train_size", np.inf, "The size of train images [np.inf]")
@@ -18,9 +18,10 @@ flags.DEFINE_integer("input_width", 256,
 flags.DEFINE_integer("output_height", 256, "The size of the output images to produce [64]")
 flags.DEFINE_integer("output_width", 256,
                      "The size of the output images to produce. If None, same value as output_height [None]")
-flags.DEFINE_string("dataset", "celebA", "The name of dataset [celebA, mnist, lsun]")
 flags.DEFINE_string("input_fname_pattern", "*.jpg", "Glob pattern of filename of input images [*]")
-flags.DEFINE_string("checkpoint_dir", "/home/prime/ProjectWork/training/trained/gan/airplaneDCGAN", "Directory name to save the checkpoints [checkpoint]")
+flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
+flags.DEFINE_string("dataset_dir", "dataset/gan/", "Dataset dir where data is in 'dataset' dir")
+flags.DEFINE_string("dataset", "default", "The name of dataset [celebA, mnist, lsun]")
 flags.DEFINE_string("sample_dir", "samples", "Directory name to save the image samples [samples]")
 flags.DEFINE_boolean("train", False, "True for training, False for testing [False]")
 flags.DEFINE_boolean("crop", False, "True for training, False for testing [False]")
@@ -47,37 +48,23 @@ def main(_):
     run_config.gpu_options.allow_growth = True
     print('Training: ',FLAGS.train)
     with tf.Session(config=run_config) as sess:
-        if FLAGS.dataset == 'mnist':
-            dcgan = DCGAN(
-                sess,
-                input_width=FLAGS.input_width,
-                input_height=FLAGS.input_height,
-                output_width=FLAGS.output_width,
-                output_height=FLAGS.output_height,
-                batch_size=FLAGS.batch_size,
-                sample_num=FLAGS.batch_size,
-                y_dim=10,
-                z_dim=FLAGS.generate_test_images,
-                dataset_name=FLAGS.dataset,
-                input_fname_pattern=FLAGS.input_fname_pattern,
-                crop=FLAGS.crop,
-                checkpoint_dir=FLAGS.checkpoint_dir,
-                sample_dir=FLAGS.sample_dir)
-        else:
-            dcgan = DCGAN(
-                sess,
-                input_width=FLAGS.input_width,
-                input_height=FLAGS.input_height,
-                output_width=FLAGS.output_width,
-                output_height=FLAGS.output_height,
-                batch_size=FLAGS.batch_size,
-                sample_num=FLAGS.batch_size,
-                z_dim=FLAGS.generate_test_images,
-                dataset_name=FLAGS.dataset,
-                input_fname_pattern=FLAGS.input_fname_pattern,
-                crop=FLAGS.crop,
-                checkpoint_dir=FLAGS.checkpoint_dir,
-                sample_dir=FLAGS.sample_dir)
+
+        dcgan = DCGAN(
+            sess,
+            input_width=FLAGS.input_width,
+            input_height=FLAGS.input_height,
+            output_width=FLAGS.output_width,
+            output_height=FLAGS.output_height,
+            batch_size=FLAGS.batch_size,
+            sample_num=FLAGS.batch_size,
+            z_dim=FLAGS.generate_test_images,
+            dataset_name=FLAGS.dataset,
+            input_fname_pattern=FLAGS.input_fname_pattern,
+            crop=FLAGS.crop,
+            checkpoint_dir=FLAGS.checkpoint_dir,
+            sample_dir=FLAGS.sample_dir,
+            dataset_dir=FLAGS.dataset_dir
+        )
 
         show_all_variables()
 
