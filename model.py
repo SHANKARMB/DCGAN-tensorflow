@@ -10,7 +10,8 @@ from six.moves import xrange
 from ops import *
 from utils import *
 
-base_dir = "/home/prime/ProjectWork/training/"
+base_dir = "/content/training/"
+# base_dir = "/home/prime/ProjectWork/training/"
 
 
 def conv_out_size_same(size, stride):
@@ -74,7 +75,7 @@ class DCGAN(object):
         self.dataset_name = dataset_name
         self.input_fname_pattern = input_fname_pattern
         self.checkpoint_dir = checkpoint_dir
-        print('Checkpoint dir: is... ', self.checkpoint_dir)
+        # print('Checkpoint dir: is... ', self.checkpoint_dir)
         if self.dataset_name == 'mnist':
             self.data_X, self.data_y = self.load_mnist()
             self.c_dim = self.data_X[0].shape[-1]
@@ -82,7 +83,7 @@ class DCGAN(object):
             self.data = glob(os.path.join(base_dir, self.dataset_dir, self.dataset_name,
                                           self.input_fname_pattern))
             imreadImg = imread(self.data[0])
-            print('path: ', self.data[0])
+            # print('path: ', self.data[0])
             if len(imreadImg.shape) >= 3:  # check if image is a non-grayscale image by checking channel number
                 self.c_dim = imread(self.data[0]).shape[-1]
             else:
@@ -208,7 +209,7 @@ class DCGAN(object):
                     batch_images = self.data_X[idx * config.batch_size:(idx + 1) * config.batch_size]
                     batch_labels = self.data_y[idx * config.batch_size:(idx + 1) * config.batch_size]
                 else:
-                    print('in train ')
+                    # print('in train ')
                     batch_files = self.data[idx * config.batch_size:(idx + 1) * config.batch_size]
                     batch = [
                         get_image(batch_file,
@@ -505,7 +506,7 @@ class DCGAN(object):
     def save(self, checkpoint_dir, step):
         model_name = "DCGAN.model"
         checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
-        print("checkpoint_dir..: ", checkpoint_dir)
+        # print("checkpoint_dir..: ", checkpoint_dir)
 
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
@@ -518,7 +519,7 @@ class DCGAN(object):
         import re
         print(" [*] Reading checkpoints...")
         checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
-        print('checkpoint_dir: ',checkpoint_dir)
+        # print('checkpoint_dir: ',checkpoint_dir)
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
             ckpt_name = os.path.basename(ckpt.model_checkpoint_path)

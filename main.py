@@ -7,11 +7,11 @@ from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
 
 flags = tf.app.flags
-flags.DEFINE_integer("epoch", 1000, "Epoch to train [25]")
+flags.DEFINE_integer("epoch", 100000, "Epoch to train [25]")
 flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]")
 flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_float("train_size", np.inf, "The size of train images [np.inf]")
-flags.DEFINE_integer("batch_size", 5, "The size of batch images [64]")
+flags.DEFINE_integer("batch_size", 25, "The size of batch images [64]")
 flags.DEFINE_integer("input_height", 256, "The size of image to use (will be center cropped). [108]")
 flags.DEFINE_integer("input_width", 256,
                      "The size of image to use (will be center cropped). If None, same value as input_height [None]")
@@ -46,7 +46,7 @@ def main(_):
     # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
     run_config = tf.ConfigProto()
     run_config.gpu_options.allow_growth = True
-    print('Training: ',FLAGS.train)
+    # print('Training: ',FLAGS.train)
     with tf.Session(config=run_config) as sess:
 
         dcgan = DCGAN(
