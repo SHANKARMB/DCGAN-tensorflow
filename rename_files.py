@@ -1,5 +1,5 @@
 import os
-from PIL import Image
+import shutil
 import json
 
 rootDir = '/home/prime/ProjectWork/training/dataset'
@@ -19,10 +19,16 @@ for sub_dir in os.listdir(current_dataset):
     count = 0
     for filename in os.listdir(os.path.join(rootDir, current_dataset, sub_dir)):
         # print(filename)
-        img = Image.open(os.path.join(rootDir, current_dataset, sub_dir,filename))
+        initial_img = os.path.join(rootDir, current_dataset, sub_dir, filename)
         final_filename = str(folder_count) + '_' + str(count) + '.jpg'
-        img.save(os.path.join(final_dir, 'images', final_filename), format='JPEG')
+        final_img = os.path.join(final_dir, 'images', final_filename)
+        shutil.copy(initial_img, final_img)
         count = count + 1
+
+    print({'index': folder_count,
+           'name': sub_dir,
+           'count': count
+           })
 
     labels.append({'index': folder_count,
                    'name': sub_dir,
@@ -30,10 +36,9 @@ for sub_dir in os.listdir(current_dataset):
                    })
 
 # print(labels)
-for i in labels:
-    print(i)
+# for i in labels:
+#     print(i)
 
 with open(os.path.join(final_dir, 'labels.txt'), 'w') as outfile:
-    dump=json.dumps(labels)
+    dump = json.dumps(labels)
     outfile.write(dump)
-
