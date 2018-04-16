@@ -29,7 +29,7 @@ class DCGAN(object):
     Args:
       sess: TensorFlow session
       batch_size: The size of batch. Should be specified before training.
-      y_dim: (optional) Dimension of dim for y. [None]
+      y_dim: (optional) Dimension of dim for y. [None] classes / labels
       z_dim: (optional) Dimension of dim for Z. [100]
       gf_dim: (optional) Dimension of gen filters in first conv layer. [64]
       df_dim: (optional) Dimension of discrim filters in first conv layer. [64]
@@ -79,6 +79,10 @@ class DCGAN(object):
         if self.dataset_name == 'mnist':
             self.data_X, self.data_y = self.load_mnist()
             self.c_dim = self.data_X[0].shape[-1]
+        elif self.dataset_name == 'images10' :
+            self.data_X, self.data_y = self.load_mnist()
+            self.c_dim = self.data_X[0].shape[-1]
+
         else:
             self.data = glob(os.path.join(base_dir, self.dataset_dir, self.dataset_name,
                                           self.input_fname_pattern))
@@ -462,6 +466,43 @@ class DCGAN(object):
 
     def load_mnist(self):
         data_dir = os.path.join("./data", self.dataset_name)
+
+        fd = open(os.path.join(data_dir, 'train-images-idx3-ubyte'))
+        loaded = np.fromfile(file=fd, dtype=np.uint8)
+        trX = loaded[16:].reshape((60000, 28, 28, 1)).astype(np.float)
+
+        fd = open(os.path.join(data_dir, 'train-labels-idx1-ubyte'))
+        loaded = np.fromfile(file=fd, dtype=np.uint8)
+        trY = loaded[8:].reshape((60000)).astype(np.float)
+
+        fd = open(os.path.join(data_dir, 't10k-images-idx3-ubyte'))
+        loaded = np.fromfile(file=fd, dtype=np.uint8)
+        teX = loaded[16:].reshape((10000, 28, 28, 1)).astype(np.float)
+
+        fd = open(os.path.join(data_dir, 't10k-labels-idx1-ubyte'))
+        loaded = np.fromfile(file=fd, dtype=np.uint8)
+        teY = loaded[8:].reshape((10000)).astype(np.float)
+
+        trY = np.asarray(trY)
+        teY = np.asarray(teY)
+
+        X = np.concatenate((trX, teX), axis=0)
+        y = np.concatenate((trY, teY), axis=0).astype(np.int)
+
+        seed = 547
+        np.random.seed(seed)
+        np.random.shuffle(X)
+        np.random.seed(seed)
+        np.random.shuffle(y)
+
+        y_vec = np.zeros((len(y), self.y_dim), dtype=np.float)
+        for i, label in enumerate(y):
+            y_vec[i, y[i]] = 1.0
+
+        return X / 255., y_vec
+
+    def load_images10(self):
+        data_dir = os.path.join(base_dir,'dataset/gan_files/images')
 
         fd = open(os.path.join(data_dir, 'train-images-idx3-ubyte'))
         loaded = np.fromfile(file=fd, dtype=np.uint8)
