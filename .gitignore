@@ -209,7 +209,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 .idea/inspectionProfiles/
-.idea/
+.idea/workspace.xml
 samples/
 logs/
 trained/
