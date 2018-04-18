@@ -21,7 +21,7 @@ flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothin
 
 # changed
 flags.DEFINE_integer("epoch", 5000, "Epoch to train [25]")
-flags.DEFINE_integer("batch_size", 64, "The size of batch images [64]")
+flags.DEFINE_integer("batch_size", 32, "The size of batch images [64]")
 flags.DEFINE_integer("input_height", 256, "The size of image to use (will be center cropped). [108]")
 flags.DEFINE_integer("input_width", 256,
                      "The size of image to use (will be center cropped). If None, same value as input_height [None]")
@@ -50,7 +50,7 @@ def main(_):
     if not os.path.exists(FLAGS.sample_dir):
         os.makedirs(FLAGS.sample_dir)
 
-    # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
     run_config = tf.ConfigProto()
     run_config.gpu_options.allow_growth = True
     # print('Training: ',FLAGS.train)
