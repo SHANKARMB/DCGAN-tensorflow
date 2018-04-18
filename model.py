@@ -10,8 +10,8 @@ from six.moves import xrange
 from ops import *
 from utils import *
 
-# base_dir = "/content/training/"
-base_dir = "/home/prime/ProjectWork/training/"
+base_dir = "/content/training/"
+# base_dir = "/home/prime/ProjectWork/training/"
 
 
 def conv_out_size_same(size, stride):
@@ -79,11 +79,13 @@ class DCGAN(object):
         if self.dataset_name == 'mnist':
             self.data_X, self.data_y = self.load_mnist()
             self.c_dim = self.data_X[0].shape[-1]
-        elif self.dataset_name == 'images10' :
-            self.data_X, self.data_y = self.load_mnist()
+
+        elif self.dataset_name == 'images10':
+            self.data_X, self.data_y = self.load_images10()
             self.c_dim = self.data_X[0].shape[-1]
 
         else:
+            # contains a list of path matching the pattern
             self.data = glob(os.path.join(base_dir, self.dataset_dir, self.dataset_name,
                                           self.input_fname_pattern))
             imreadImg = imread(self.data[0])
@@ -175,6 +177,10 @@ class DCGAN(object):
         if config.dataset == 'mnist':
             sample_inputs = self.data_X[0:self.sample_num]
             sample_labels = self.data_y[0:self.sample_num]
+
+        elif config.dataset == 'images10':
+            sample_inputs = self.data_X[0:self.sample_num]
+            sample_labels = self.data_y[0:self.sample_num]
         else:
             sample_files = self.data[0:self.sample_num]
             sample = [
@@ -202,6 +208,10 @@ class DCGAN(object):
         for epoch in xrange(config.epoch):
             if config.dataset == 'mnist':
                 batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
+
+            elif config.dataset == 'images10':
+                batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
+
             else:
                 self.data = glob(os.path.join(
                     base_dir, self.dataset_dir, config.dataset,
@@ -212,6 +222,11 @@ class DCGAN(object):
                 if config.dataset == 'mnist':
                     batch_images = self.data_X[idx * config.batch_size:(idx + 1) * config.batch_size]
                     batch_labels = self.data_y[idx * config.batch_size:(idx + 1) * config.batch_size]
+
+                elif config.dataset == 'images10':
+                    batch_images = self.data_X[idx * config.batch_size:(idx + 1) * config.batch_size]
+                    batch_labels = self.data_y[idx * config.batch_size:(idx + 1) * config.batch_size]
+
                 else:
                     # print('in train ')
                     batch_files = self.data[idx * config.batch_size:(idx + 1) * config.batch_size]
@@ -232,6 +247,42 @@ class DCGAN(object):
                     .astype(np.float32)
 
                 if config.dataset == 'mnist':
+                    # Update D network
+                    _, summary_str = self.sess.run([d_optim, self.d_sum],
+                                                   feed_dict={
+                                                       self.inputs: batch_images,
+                                                       self.z: batch_z,
+                                                       self.y: batch_labels,
+                                                   })
+                    self.writer.add_summary(summary_str, counter)
+
+                    # Update G network
+                    _, summary_str = self.sess.run([g_optim, self.g_sum],
+                                                   feed_dict={
+                                                       self.z: batch_z,
+                                                       self.y: batch_labels,
+                                                   })
+                    self.writer.add_summary(summary_str, counter)
+
+                    # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
+                    _, summary_str = self.sess.run([g_optim, self.g_sum],
+                                                   feed_dict={self.z: batch_z, self.y: batch_labels})
+                    self.writer.add_summary(summary_str, counter)
+
+                    errD_fake = self.d_loss_fake.eval({
+                        self.z: batch_z,
+                        self.y: batch_labels
+                    })
+                    errD_real = self.d_loss_real.eval({
+                        self.inputs: batch_images,
+                        self.y: batch_labels
+                    })
+                    errG = self.g_loss.eval({
+                        self.z: batch_z,
+                        self.y: batch_labels
+                    })
+
+                elif config.dataset == 'images10':
                     # Update D network
                     _, summary_str = self.sess.run([d_optim, self.d_sum],
                                                    feed_dict={
@@ -293,6 +344,19 @@ class DCGAN(object):
 
                 if np.mod(counter, 100) == 1:
                     if config.dataset == 'mnist':
+                        samples, d_loss, g_loss = self.sess.run(
+                            [self.sampler, self.d_loss, self.g_loss],
+                            feed_dict={
+                                self.z: sample_z,
+                                self.inputs: sample_inputs,
+                                self.y: sample_labels,
+                            }
+                        )
+                        save_images(samples, image_manifold_size(samples.shape[0]),
+                                    './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
+                        print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
+
+                    elif config.dataset == 'images10':
                         samples, d_loss, g_loss = self.sess.run(
                             [self.sampler, self.d_loss, self.g_loss],
                             feed_dict={
@@ -502,29 +566,27 @@ class DCGAN(object):
         return X / 255., y_vec
 
     def load_images10(self):
-        data_dir = os.path.join(base_dir,'dataset/gan_files/images')
 
-        fd = open(os.path.join(data_dir, 'train-images-idx3-ubyte'))
-        loaded = np.fromfile(file=fd, dtype=np.uint8)
-        trX = loaded[16:].reshape((60000, 28, 28, 1)).astype(np.float)
+        labels_filename = 'labels.txt'
+        with open(os.path.join(base_dir, self.dataset_dir, self.dataset_name, labels_filename)) as f:
+            data = json.loads(f.read())
+        images_list = []
+        labels_list = []
+        for i in data:
+            for j in range(i['count']):
+                images_list.append(str(i['index']) + '_' + str(j) + '.jpg')
+                labels_list.append(str(i['index']))
 
-        fd = open(os.path.join(data_dir, 'train-labels-idx1-ubyte'))
-        loaded = np.fromfile(file=fd, dtype=np.uint8)
-        trY = loaded[8:].reshape((60000)).astype(np.float)
-
-        fd = open(os.path.join(data_dir, 't10k-images-idx3-ubyte'))
-        loaded = np.fromfile(file=fd, dtype=np.uint8)
-        teX = loaded[16:].reshape((10000, 28, 28, 1)).astype(np.float)
-
-        fd = open(os.path.join(data_dir, 't10k-labels-idx1-ubyte'))
-        loaded = np.fromfile(file=fd, dtype=np.uint8)
-        teY = loaded[8:].reshape((10000)).astype(np.float)
-
-        trY = np.asarray(trY)
-        teY = np.asarray(teY)
-
-        X = np.concatenate((trX, teX), axis=0)
-        y = np.concatenate((trY, teY), axis=0).astype(np.int)
+        sample = [
+            get_image(os.path.join(base_dir, self.dataset_dir, self.dataset_name, 'images', image_name),
+                      input_height=self.input_height,
+                      input_width=self.input_width,
+                      resize_height=self.output_height,
+                      resize_width=self.output_width,
+                      crop=self.crop,
+                      grayscale=False) for image_name in images_list]
+        X = np.array(sample).astype(np.float32)
+        y = np.asarray(labels_list).astype(np.int)
 
         seed = 547
         np.random.seed(seed)
@@ -560,7 +622,7 @@ class DCGAN(object):
         import re
         print(" [*] Reading checkpoints...")
         checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
-        print('checkpoint_dir: ',checkpoint_dir)
+        print('checkpoint_dir: ', checkpoint_dir)
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:
             ckpt_name = os.path.basename(ckpt.model_checkpoint_path)
@@ -571,4 +633,3 @@ class DCGAN(object):
         else:
             print(" [*] Failed to find a checkpoint")
             return False, 0
-
