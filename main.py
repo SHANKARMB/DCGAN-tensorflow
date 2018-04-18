@@ -21,7 +21,7 @@ flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothin
 
 # changed
 flags.DEFINE_integer("epoch", 5000, "Epoch to train [25]")
-flags.DEFINE_integer("batch_size", 32, "The size of batch images [64]")
+flags.DEFINE_integer("batch_size", 64, "The size of batch images [64]")
 flags.DEFINE_integer("input_height", 256, "The size of image to use (will be center cropped). [108]")
 flags.DEFINE_integer("input_width", 256,
                      "The size of image to use (will be center cropped). If None, same value as input_height [None]")
@@ -29,7 +29,7 @@ flags.DEFINE_integer("output_height", 256, "The size of the output images to pro
 flags.DEFINE_integer("output_width", 256,
                      "The size of the output images to produce. If None, same value as output_height [None]")
 flags.DEFINE_integer("num_classes", 10, "Number of classes to train on. [100]")
-flags.DEFINE_integer("generate_test_images", 10, "Number of images to generate during test. [100]")
+flags.DEFINE_integer("generate_test_images", 2, "Number of images to generate during test. [100]")
 flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
 flags.DEFINE_string("dataset_dir", "dataset/gan_files/", "Dataset dir where data is in 'dataset' dir")
 flags.DEFINE_string("dataset", "images10", "The name of dataset [images10,celebA, mnist, lsun]")
