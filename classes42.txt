@@ -2,7 +2,7 @@ airplane
 bicycle
 bread
 pickup_truck
-hedgehog
+songbird
 hot-air_balloon
 snake
 pineapple

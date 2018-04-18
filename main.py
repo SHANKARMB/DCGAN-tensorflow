@@ -51,7 +51,7 @@ def main(_):
         os.makedirs(FLAGS.sample_dir)
 
     gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-    run_config = tf.ConfigProto()
+    run_config = tf.ConfigProto(gpu_options=gpu_options)
     run_config.gpu_options.allow_growth = True
     # print('Training: ',FLAGS.train)
     with tf.Session(config=run_config) as sess:
