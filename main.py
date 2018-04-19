@@ -46,15 +46,15 @@ def main(_):
         FLAGS.output_width = FLAGS.output_height
 
     if not os.path.exists(os.path.join(base_dir, FLAGS.checkpoint_dir)):
-        os.makedirs(FLAGS.checkpoint_dir)
+        os.makedirs(os.path.join(base_dir, FLAGS.checkpoint_dir))
     if not os.path.exists(FLAGS.sample_dir):
         os.makedirs(FLAGS.sample_dir)
 
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-    # run_config = tf.ConfigProto(gpu_options=gpu_options)
-    # run_config.gpu_options.allow_growth = True
+    # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
+    run_config = tf.ConfigProto()
+    run_config.gpu_options.allow_growth = True
     # print('Training: ',FLAGS.train)
-    with tf.Session(config=tf.ConfigProto(gpu_options=gpu_options)) as sess:
+    with tf.Session(config=run_config) as sess:
         if FLAGS.dataset == 'mnist':
             dcgan = DCGAN(
                 sess,
