@@ -44,6 +44,7 @@ def train_gan(learning_rate=0.0002, input_width=256, input_height=256,
               input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
               crop=False, train=True
               ):
+    print('started')
     FLAGS.learning_rate = learning_rate
     FLAGS.input_width = input_width
     FLAGS.input_height = input_height
@@ -59,7 +60,7 @@ def train_gan(learning_rate=0.0002, input_width=256, input_height=256,
     FLAGS.dataset_dir = dataset_dir
     FLAGS.crop = crop
     FLAGS.train = train
-    tf.app.run()
+    tf.app.run(main=main)
 
 
 def test_gan(learning_rate=0.0002, input_width=256, input_height=256,
@@ -85,7 +86,7 @@ def test_gan(learning_rate=0.0002, input_width=256, input_height=256,
     FLAGS.crop = crop
     FLAGS.train = train
     print('train', FLAGS.train)
-    tf.app.run()
+    tf.app.run(main=main)
 
 
 def main(_):
