@@ -10,10 +10,6 @@ from six.moves import xrange
 from ops import *
 from utils import *
 
-# base_dir = "/content/training/"
-base_dir = "/home/prime/ProjectWork/training/"
-# base_dir = '/home/cprmi01/FinalSemProject/training'
-
 
 def conv_out_size_same(size, stride):
     return int(math.ceil(float(size) / float(stride)))
@@ -24,7 +20,9 @@ class DCGAN(object):
                  batch_size=64, sample_num=32, output_height=256, output_width=256,
                  y_dim=None, z_dim=100, gf_dim=64, df_dim=64,
                  gfc_dim=1024, dfc_dim=1024, c_dim=3, dataset_name='default',
-                 input_fname_pattern='*.jpg', checkpoint_dir=None, sample_dir=None, dataset_dir=None):
+                 input_fname_pattern='*.jpg', checkpoint_dir=None, sample_dir=None, dataset_dir=None,
+                 base_dir=None
+                 ):
         """
 
     Args:
@@ -69,7 +67,7 @@ class DCGAN(object):
         self.g_bn0 = batch_norm(name='g_bn0')
         self.g_bn1 = batch_norm(name='g_bn1')
         self.g_bn2 = batch_norm(name='g_bn2')
-
+        self.base_dir = base_dir
         if not self.y_dim:
             self.g_bn3 = batch_norm(name='g_bn3')
 
@@ -227,7 +225,7 @@ class DCGAN(object):
 
             else:
                 self.data = glob(os.path.join(
-                    base_dir, self.dataset_dir, config.dataset,'images',
+                    self.base_dir, self.dataset_dir, config.dataset,'images',
                     self.input_fname_pattern))
                 batch_idxs = min(len(self.data), config.train_size) // config.batch_size
 
@@ -581,7 +579,7 @@ class DCGAN(object):
     def load_images10(self):
 
         labels_filename = 'labels.txt'
-        with open(os.path.join(base_dir, self.dataset_dir, self.dataset_name, labels_filename)) as f:
+        with open(os.path.join(self.base_dir, self.dataset_dir, self.dataset_name, labels_filename)) as f:
             data = json.loads(f.read())
         images_list = []
         labels_list = []
@@ -591,7 +589,7 @@ class DCGAN(object):
                 labels_list.append(str(i['index']))
 
         sample = [
-            get_image(os.path.join(base_dir, self.dataset_dir, self.dataset_name, 'images', image_name),
+            get_image(os.path.join(self.base_dir, self.dataset_dir, self.dataset_name, 'images', image_name),
                       input_height=self.input_height,
                       input_width=self.input_width,
                       resize_height=self.output_height,
@@ -621,7 +619,7 @@ class DCGAN(object):
 
     def save(self, checkpoint_dir, step):
         model_name = "DCGAN.model"
-        checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
+        checkpoint_dir = os.path.join(self.base_dir, checkpoint_dir, self.model_dir)
         print("checkpoint_dir..: ", checkpoint_dir)
 
         if not os.path.exists(checkpoint_dir):
@@ -634,7 +632,7 @@ class DCGAN(object):
     def load(self, checkpoint_dir):
         import re
         print(" [*] Reading checkpoints...")
-        checkpoint_dir = os.path.join(base_dir, checkpoint_dir, self.model_dir)
+        checkpoint_dir = os.path.join(self.base_dir, checkpoint_dir, self.model_dir)
         print('checkpoint_dir: ', checkpoint_dir)
         ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
         if ckpt and ckpt.model_checkpoint_path:

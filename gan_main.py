@@ -6,9 +6,12 @@ from model import DCGAN
 from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
 
-# base_dir = "/content/training/"
-base_dir = "/home/prime/ProjectWork/training/"
-# base_dir = '/home/cprmi01/FinalSemProject/training'
+# # base_dir = "/content/training/"
+# base_dir = "/home/prime/ProjectWork/training/"
+# # base_dir = '/home/cprmi01/FinalSemProject/training'
+base_dirs = ["/content/training/",
+             "/home/prime/ProjectWork/training/",
+             '/home/cprmi01/FinalSemProject/training']
 
 flags = tf.app.flags
 flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]")
@@ -44,7 +47,7 @@ def train_gan(learning_rate=0.0002, input_width=256, input_height=256,
               sample_dir='samples', dataset='images10', batch_size=32,
               num_classes=10, generate_test_images=5,
               input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
-              crop=False, train=True
+              crop=False, train=True, base_dir_index=0
               ):
     print('started')
     FLAGS.learning_rate = learning_rate
@@ -62,6 +65,7 @@ def train_gan(learning_rate=0.0002, input_width=256, input_height=256,
     FLAGS.dataset_dir = dataset_dir
     FLAGS.crop = crop
     FLAGS.train = train
+    FLAGS.base_dir = base_dirs[base_dir_index]
     tf.app.run(main=main)
 
 
@@ -71,7 +75,7 @@ def test_gan(learning_rate=0.0002, input_width=256, input_height=256,
              num_classes=10, generate_test_images=5,
              input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
              crop=False, train=False
-             ):
+             , base_dir_index=0):
     FLAGS.learning_rate = learning_rate
     FLAGS.input_width = input_width
     FLAGS.input_height = input_height
@@ -87,6 +91,7 @@ def test_gan(learning_rate=0.0002, input_width=256, input_height=256,
     FLAGS.dataset_dir = dataset_dir
     FLAGS.crop = crop
     FLAGS.train = train
+    FLAGS.base_dir = base_dirs[base_dir_index]
     print('train', FLAGS.train)
     tf.app.run(main=main)
 
@@ -124,7 +129,8 @@ def main(_):
                 input_fname_pattern=FLAGS.input_fname_pattern,
                 crop=FLAGS.crop,
                 checkpoint_dir=FLAGS.checkpoint_dir,
-                sample_dir=FLAGS.sample_dir
+                sample_dir=FLAGS.sample_dir,
+                base_dir=base_dir
 
             )
         elif FLAGS.dataset == 'images10':
@@ -143,7 +149,8 @@ def main(_):
                 crop=FLAGS.crop,
                 checkpoint_dir=FLAGS.checkpoint_dir,
                 sample_dir=FLAGS.sample_dir,
-                dataset_dir=FLAGS.dataset_dir
+                dataset_dir=FLAGS.dataset_dir,
+                base_dir=base_dir
 
             )
         else:
@@ -161,7 +168,8 @@ def main(_):
                 crop=FLAGS.crop,
                 checkpoint_dir=FLAGS.checkpoint_dir,
                 sample_dir=FLAGS.sample_dir,
-                dataset_dir=FLAGS.dataset_dir
+                dataset_dir=FLAGS.dataset_dir,
+                base_dir=base_dir
             )
 
         show_all_variables()
