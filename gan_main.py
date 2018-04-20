@@ -8,7 +8,7 @@ import tensorflow as tf
 
 # base_dir = "/content/training/"
 # base_dir = "/home/prime/ProjectWork/training/"
-base_dir = 'home/cprmi01/FinalSemProject/training'
+base_dir = '/home/cprmi01/FinalSemProject/training'
 
 flags = tf.app.flags
 flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]")
