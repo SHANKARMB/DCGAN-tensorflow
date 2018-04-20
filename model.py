@@ -6,7 +6,7 @@ from glob import glob
 import tensorflow as tf
 import numpy as np
 from six.moves import xrange
-
+import random
 from ops import *
 from utils import *
 
@@ -16,6 +16,7 @@ def conv_out_size_same(size, stride):
 
 
 class DCGAN(object):
+
     def __init__(self, sess, input_height=256, input_width=256, crop=False,
                  batch_size=64, sample_num=32, output_height=256, output_width=256,
                  y_dim=None, z_dim=100, gf_dim=64, df_dim=64,
@@ -75,6 +76,7 @@ class DCGAN(object):
         self.input_fname_pattern = input_fname_pattern
         self.checkpoint_dir = checkpoint_dir
         print('Checkpoint dir: is... ', self.checkpoint_dir)
+
         if self.dataset_name == 'mnist':
             self.data_X, self.data_y = self.load_mnist()
             self.c_dim = self.data_X[0].shape[-1]
@@ -83,14 +85,18 @@ class DCGAN(object):
             print('reading images')
             print('--------------------_____________________----------------------------')
 
-            self.data_X, self.data_y = self.load_images10()
+            self.data, self.labels = self.load_images10()
+            self.c_dim = 3
+
             print('read images')
             print('--------------------_____________________----------------------------')
-            self.c_dim = self.data_X[0].shape[-1]
+
+            # _______________________________---------------------------__________________
+
 
         else:
             # contains a list of path matching the pattern
-            self.data = glob(os.path.join(base_dir, self.dataset_dir, self.dataset_name,'images',
+            self.data = glob(os.path.join(base_dir, self.dataset_dir, self.dataset_name, 'images',
                                           self.input_fname_pattern))
             imreadImg = imread(self.data[0])
             # print('path: ', self.data[0])
@@ -190,8 +196,8 @@ class DCGAN(object):
         elif config.dataset == 'images10':
             print('reading samples...')
             print('--------------------_____________________----------------------------')
-            sample_inputs = self.data_X[0:self.sample_num]
-            sample_labels = self.data_y[0:self.sample_num]
+            sample_inputs, sample_labels = self.get_data_and_labels(0, self.sample_num)
+        #
         else:
             sample_files = self.data[0:self.sample_num]
             sample = [
@@ -221,11 +227,13 @@ class DCGAN(object):
                 batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
 
             elif config.dataset == 'images10':
-                batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
+                print('config.train_size is ', config.train_size)
+                batch_idxs = min(len(self.data), config.train_size) // config.batch_size
+                print('batch_idxs', batch_idxs)
 
             else:
                 self.data = glob(os.path.join(
-                    self.base_dir, self.dataset_dir, config.dataset,'images',
+                    self.base_dir, self.dataset_dir, config.dataset, 'images',
                     self.input_fname_pattern))
                 batch_idxs = min(len(self.data), config.train_size) // config.batch_size
 
@@ -235,8 +243,8 @@ class DCGAN(object):
                     batch_labels = self.data_y[idx * config.batch_size:(idx + 1) * config.batch_size]
 
                 elif config.dataset == 'images10':
-                    batch_images = self.data_X[idx * config.batch_size:(idx + 1) * config.batch_size]
-                    batch_labels = self.data_y[idx * config.batch_size:(idx + 1) * config.batch_size]
+                    batch_images, batch_labels = self.get_data_and_labels(idx * config.batch_size,
+                                                                          (idx + 1) * config.batch_size)
 
                 else:
                     # print('in train ')
@@ -379,6 +387,7 @@ class DCGAN(object):
                         save_images(samples, image_manifold_size(samples.shape[0]),
                                     './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
                         print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
+
                     else:
                         try:
                             samples, d_loss, g_loss = self.sess.run(
@@ -581,12 +590,22 @@ class DCGAN(object):
         labels_filename = 'labels.txt'
         with open(os.path.join(self.base_dir, self.dataset_dir, self.dataset_name, labels_filename)) as f:
             data = json.loads(f.read())
-        images_list = []
-        labels_list = []
+
+        num_images = 0
+        for i in data:
+            num_images = num_images + i['count']
+        images_list = ['' for _ in range(num_images)]
+        labels_list = [0 for _ in range(num_images)]
+        x = random.sample(range(num_images), num_images)
+        count = 0
         for i in data:
             for j in range(i['count']):
-                images_list.append(str(i['index']) + '_' + str(j) + '.jpg')
-                labels_list.append(str(i['index']))
+                images_list.insert(x[count], str(i['index']) + '_' + str(j) + '.jpg')
+                labels_list.insert(x[count], i['index'])
+                count = count + 1
+        return images_list, labels_list
+
+    def get_data_and_labels(self, start_index, stop_index):
 
         sample = [
             get_image(os.path.join(self.base_dir, self.dataset_dir, self.dataset_name, 'images', image_name),
@@ -595,15 +614,9 @@ class DCGAN(object):
                       resize_height=self.output_height,
                       resize_width=self.output_width,
                       crop=self.crop,
-                      grayscale=False) for image_name in images_list]
+                      grayscale=False) for image_name in self.data[start_index:stop_index]]
         X = np.array(sample).astype(np.float32)
-        y = np.asarray(labels_list).astype(np.int)
-
-        seed = 547
-        np.random.seed(seed)
-        np.random.shuffle(X)
-        np.random.seed(seed)
-        np.random.shuffle(y)
+        y = np.asarray(self.labels[start_index:stop_index]).astype(np.int)
 
         y_vec = np.zeros((len(y), self.y_dim), dtype=np.float)
         for i, label in enumerate(y):

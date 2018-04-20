@@ -36,7 +36,7 @@ flags.DEFINE_integer("num_classes", 10, "Number of classes to train on. [100]")
 flags.DEFINE_integer("generate_test_images", 2, "Number of images to generate during test. [100]")
 flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
 flags.DEFINE_string("dataset_dir", "dataset/gan_files/", "Dataset dir where data is in 'dataset' dir")
-flags.DEFINE_string("dataset", "images101", "The name of dataset [images10,celebA, mnist, lsun]")
+flags.DEFINE_string("dataset", "images10", "The name of dataset [images10,celebA, mnist, lsun]")
 flags.DEFINE_string("base_dir", "/home/prime/ProjectWork/training/", "base dir")
 
 FLAGS = flags.FLAGS
@@ -98,14 +98,14 @@ def test_gan(learning_rate=0.0002, input_width=256, input_height=256,
 
 def main(_):
     pp.pprint(flags.FLAGS.__flags)
-    base_dir = FLAGS.base_dir
+
     if FLAGS.input_width is None:
         FLAGS.input_width = FLAGS.input_height
     if FLAGS.output_width is None:
         FLAGS.output_width = FLAGS.output_height
 
-    if not os.path.exists(os.path.join(base_dir, FLAGS.checkpoint_dir)):
-        os.makedirs(os.path.join(base_dir, FLAGS.checkpoint_dir))
+    if not os.path.exists(os.path.join(FLAGS.base_dir, FLAGS.checkpoint_dir)):
+        os.makedirs(os.path.join(FLAGS.base_dir, FLAGS.checkpoint_dir))
     if not os.path.exists(FLAGS.sample_dir):
         os.makedirs(FLAGS.sample_dir)
 
@@ -130,7 +130,7 @@ def main(_):
                 crop=FLAGS.crop,
                 checkpoint_dir=FLAGS.checkpoint_dir,
                 sample_dir=FLAGS.sample_dir,
-                base_dir=base_dir
+                base_dir=FLAGS.base_dir
 
             )
         elif FLAGS.dataset == 'images10':
@@ -150,7 +150,7 @@ def main(_):
                 checkpoint_dir=FLAGS.checkpoint_dir,
                 sample_dir=FLAGS.sample_dir,
                 dataset_dir=FLAGS.dataset_dir,
-                base_dir=base_dir
+                base_dir=FLAGS.base_dir
 
             )
         else:
@@ -169,7 +169,7 @@ def main(_):
                 checkpoint_dir=FLAGS.checkpoint_dir,
                 sample_dir=FLAGS.sample_dir,
                 dataset_dir=FLAGS.dataset_dir,
-                base_dir=base_dir
+                base_dir=FLAGS.base_dir
             )
 
         show_all_variables()
