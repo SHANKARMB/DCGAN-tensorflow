@@ -164,7 +164,7 @@ def main(_):
             )
 
         show_all_variables()
-        print('done initializing')
+        print('going to train')
         if FLAGS.train:
             dcgan.train(FLAGS)
         else:

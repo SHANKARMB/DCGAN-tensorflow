@@ -21,7 +21,7 @@ def conv_out_size_same(size, stride):
 
 class DCGAN(object):
     def __init__(self, sess, input_height=256, input_width=256, crop=False,
-                 batch_size=64, sample_num=64, output_height=256, output_width=256,
+                 batch_size=64, sample_num=32, output_height=256, output_width=256,
                  y_dim=None, z_dim=100, gf_dim=64, df_dim=64,
                  gfc_dim=1024, dfc_dim=1024, c_dim=3, dataset_name='default',
                  input_fname_pattern='*.jpg', checkpoint_dir=None, sample_dir=None, dataset_dir=None):
@@ -82,7 +82,12 @@ class DCGAN(object):
             self.c_dim = self.data_X[0].shape[-1]
 
         elif self.dataset_name == 'images10':
+            print('reading images')
+            print('--------------------_____________________----------------------------')
+
             self.data_X, self.data_y = self.load_images10()
+            print('read images')
+            print('--------------------_____________________----------------------------')
             self.c_dim = self.data_X[0].shape[-1]
 
         else:
@@ -97,10 +102,15 @@ class DCGAN(object):
                 self.c_dim = 1
 
         self.grayscale = (self.c_dim == 1)
+        print('done initializing')
+        print('--------------------_____________________----------------------------')
 
         self.build_model()
 
     def build_model(self):
+        print('building model')
+        print('--------------------_____________________----------------------------')
+
         if self.y_dim:
             self.y = tf.placeholder(tf.float32, [self.batch_size, self.y_dim], name='y')
         else:
@@ -180,6 +190,8 @@ class DCGAN(object):
             sample_labels = self.data_y[0:self.sample_num]
 
         elif config.dataset == 'images10':
+            print('reading samples...')
+            print('--------------------_____________________----------------------------')
             sample_inputs = self.data_X[0:self.sample_num]
             sample_labels = self.data_y[0:self.sample_num]
         else:
