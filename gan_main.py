@@ -26,11 +26,11 @@ flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothin
 # changed
 flags.DEFINE_integer("epoch", 5000, "Epoch to train [25]")
 flags.DEFINE_integer("batch_size", 64, "The size of batch images [64]")
-flags.DEFINE_integer("input_height", 256, "The size of image to use (will be center cropped). [108]")
-flags.DEFINE_integer("input_width", 256,
+flags.DEFINE_integer("input_height", 128, "The size of image to use (will be center cropped). [108]")
+flags.DEFINE_integer("input_width", 128,
                      "The size of image to use (will be center cropped). If None, same value as input_height [None]")
-flags.DEFINE_integer("output_height", 256, "The size of the output images to produce [64]")
-flags.DEFINE_integer("output_width", 256,
+flags.DEFINE_integer("output_height", 128, "The size of the output images to produce [64]")
+flags.DEFINE_integer("output_width", 128,
                      "The size of the output images to produce. If None, same value as output_height [None]")
 flags.DEFINE_integer("num_classes", 10, "Number of classes to train on. [100]")
 flags.DEFINE_integer("generate_test_images", 5, "Number of images to generate during test. [100]")
@@ -42,8 +42,8 @@ flags.DEFINE_string("base_dir", "/home/prime/ProjectWork/training/", "base dir")
 FLAGS = flags.FLAGS
 
 
-def train_gan(learning_rate=0.0002, input_width=256, input_height=256,
-              output_width=256, output_height=256, checkpoint_dir="trained/gan/",
+def train_gan(learning_rate=0.0002, input_width=128, input_height=128,
+              output_width=128, output_height=128, checkpoint_dir="trained/gan/",
               sample_dir='samples', dataset='images10', batch_size=32,
               num_classes=10, generate_test_images=5,
               input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
@@ -69,8 +69,8 @@ def train_gan(learning_rate=0.0002, input_width=256, input_height=256,
     tf.app.run(main=main)
 
 
-def test_gan(learning_rate=0.0002, input_width=256, input_height=256,
-             output_width=256, output_height=256, checkpoint_dir="trained/gan/",
+def test_gan(learning_rate=0.0002, input_width=128, input_height=128,
+             output_width=128, output_height=128, checkpoint_dir="trained/gan/",
              sample_dir='samples', dataset='images10', batch_size=32,
              num_classes=10, generate_test_images=5,
              input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
@@ -110,7 +110,7 @@ def main(_):
         os.makedirs(FLAGS.sample_dir)
 
     # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
-    run_config = tf.ConfigProto(allow_soft_placement=True)
+    run_config = tf.ConfigProto()
     run_config.gpu_options.allow_growth = True
     # print('Training: ',FLAGS.train)
     with tf.Session(config=run_config) as sess:
