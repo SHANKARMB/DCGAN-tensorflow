@@ -103,7 +103,7 @@ def main(_):
         FLAGS.input_width = FLAGS.input_height
     if FLAGS.output_width is None:
         FLAGS.output_width = FLAGS.output_height
-
+    print(FLAGS.base_dir)
     if not os.path.exists(os.path.join(FLAGS.base_dir, FLAGS.checkpoint_dir)):
         os.makedirs(os.path.join(FLAGS.base_dir, FLAGS.checkpoint_dir))
     if not os.path.exists(FLAGS.sample_dir):
