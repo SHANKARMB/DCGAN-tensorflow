@@ -38,6 +38,58 @@ flags.DEFINE_string("dataset", "images10", "The name of dataset [images10,celebA
 FLAGS = flags.FLAGS
 
 
+def train_gan(learning_rate=0.0002, input_width=256, input_height=256,
+              output_width=256, output_height=256, checkpoint_dir="trained/gan/",
+              sample_dir='samples', dataset='images10', batch_size=32,
+              num_classes=10, generate_test_images=5,
+              input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
+              crop=False, train=True
+              ):
+    print('started')
+    FLAGS.learning_rate = learning_rate
+    FLAGS.input_width = input_width
+    FLAGS.input_height = input_height
+    FLAGS.output_width = output_width
+    FLAGS.output_height = output_height
+    FLAGS.checkpoint_dir = checkpoint_dir
+    FLAGS.sample_dir = sample_dir
+    FLAGS.dataset = dataset
+    FLAGS.batch_size = batch_size
+    FLAGS.num_classes = num_classes
+    FLAGS.generate_test_images = generate_test_images
+    FLAGS.input_fname_pattern = input_fname_pattern
+    FLAGS.dataset_dir = dataset_dir
+    FLAGS.crop = crop
+    FLAGS.train = train
+    tf.app.run(main=main)
+
+
+def test_gan(learning_rate=0.0002, input_width=256, input_height=256,
+             output_width=256, output_height=256, checkpoint_dir="trained/gan/",
+             sample_dir='samples', dataset='images10', batch_size=32,
+             num_classes=10, generate_test_images=5,
+             input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
+             crop=False, train=False
+             ):
+    FLAGS.learning_rate = learning_rate
+    FLAGS.input_width = input_width
+    FLAGS.input_height = input_height
+    FLAGS.output_width = output_width
+    FLAGS.output_height = output_height
+    FLAGS.checkpoint_dir = checkpoint_dir
+    FLAGS.sample_dir = sample_dir
+    FLAGS.dataset = dataset
+    FLAGS.batch_size = batch_size
+    FLAGS.num_classes = num_classes
+    FLAGS.generate_test_images = generate_test_images
+    FLAGS.input_fname_pattern = input_fname_pattern
+    FLAGS.dataset_dir = dataset_dir
+    FLAGS.crop = crop
+    FLAGS.train = train
+    print('train', FLAGS.train)
+    tf.app.run(main=main)
+
+
 def main(_):
     pp.pprint(flags.FLAGS.__flags)
 
