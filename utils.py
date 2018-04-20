@@ -26,7 +26,7 @@ def show_all_variables():
 
 def get_image(image_path, input_height, input_width,
               resize_height=64, resize_width=64,
-              crop=True, grayscale=False):
+              crop=False, grayscale=False):
     image = imread(image_path, grayscale)
     return transform(image, input_height, input_width,
                      resize_height, resize_width, crop)
@@ -38,9 +38,9 @@ def save_images(images, size, image_path):
 
 def imread(path, grayscale=False):
     if (grayscale):
-        return scipy.misc.imread(path, flatten=True).astype(np.float)
+        return scipy.misc.imresize(arr=scipy.misc.imread(path, flatten=True).astype(np.float),size=(128,128))
     else:
-        return scipy.misc.imread(path).astype(np.float)
+        return scipy.misc.imresize(arr=scipy.misc.imread(path).astype(np.float),size=(128,128))
 
 
 def merge_images(images, size):
@@ -86,7 +86,7 @@ def center_crop(x, crop_h, crop_w,
 
 
 def transform(image, input_height, input_width,
-              resize_height=64, resize_width=64, crop=True):
+              resize_height=64, resize_width=64, crop=False):
     if crop:
         cropped_image = center_crop(
             image, input_height, input_width,
