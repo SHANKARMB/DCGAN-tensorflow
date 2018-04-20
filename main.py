@@ -6,8 +6,9 @@ from model import DCGAN
 from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
 
-base_dir = "/content/training/"
+# base_dir = "/content/training/"
 # base_dir = "/home/prime/ProjectWork/training/"
+base_dir = 'home/cprmi01/FinalSemProject/training'
 
 flags = tf.app.flags
 flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]")
@@ -111,7 +112,7 @@ def main(_):
             )
 
         show_all_variables()
-
+        print('done initializing')
         if FLAGS.train:
             dcgan.train(FLAGS)
         else:

@@ -10,8 +10,9 @@ from six.moves import xrange
 from ops import *
 from utils import *
 
-base_dir = "/content/training/"
+# base_dir = "/content/training/"
 # base_dir = "/home/prime/ProjectWork/training/"
+base_dir = 'home/cprmi01/FinalSemProject/training'
 
 
 def conv_out_size_same(size, stride):
