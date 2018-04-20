@@ -603,6 +603,8 @@ class DCGAN(object):
                 images_list.insert(x[count], str(i['index']) + '_' + str(j) + '.jpg')
                 labels_list.insert(x[count], i['index'])
                 count = count + 1
+        print('images_list[:10] ', images_list[:10])
+        print('labels_list[:10] ', labels_list[:10])
         return images_list, labels_list
 
     def get_data_and_labels(self, start_index, stop_index):
