@@ -608,8 +608,8 @@ class DCGAN(object):
         count = 0
         for i in data:
             for j in range(int(i['count'])):
-                images_list.insert(x[count], str(i['index']) + '_' + str(j) + '.jpg')
-                labels_list.insert(x[count], i['index'])
+                images_list[x[count]] = str(i['index']) + '_' + str(j) + '.jpg'
+                labels_list[x[count]] = i['index']
                 count = count + 1
         print('count', count)
         print('len(images_list)', len(images_list))
