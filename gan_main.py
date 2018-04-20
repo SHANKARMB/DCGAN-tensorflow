@@ -34,6 +34,7 @@ flags.DEFINE_integer("generate_test_images", 2, "Number of images to generate du
 flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
 flags.DEFINE_string("dataset_dir", "dataset/gan_files/", "Dataset dir where data is in 'dataset' dir")
 flags.DEFINE_string("dataset", "images101", "The name of dataset [images10,celebA, mnist, lsun]")
+flags.DEFINE_string("base_dir", "/home/prime/ProjectWork/training/", "base dir")
 
 FLAGS = flags.FLAGS
 
@@ -92,7 +93,7 @@ def test_gan(learning_rate=0.0002, input_width=256, input_height=256,
 
 def main(_):
     pp.pprint(flags.FLAGS.__flags)
-
+    base_dir = FLAGS.base_dir
     if FLAGS.input_width is None:
         FLAGS.input_width = FLAGS.input_height
     if FLAGS.output_width is None:
