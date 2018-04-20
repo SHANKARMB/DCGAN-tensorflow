@@ -11,8 +11,8 @@ from ops import *
 from utils import *
 
 # base_dir = "/content/training/"
-# base_dir = "/home/prime/ProjectWork/training/"
-base_dir = '/home/cprmi01/FinalSemProject/training'
+base_dir = "/home/prime/ProjectWork/training/"
+# base_dir = '/home/cprmi01/FinalSemProject/training'
 
 
 def conv_out_size_same(size, stride):
@@ -92,7 +92,7 @@ class DCGAN(object):
 
         else:
             # contains a list of path matching the pattern
-            self.data = glob(os.path.join(base_dir, self.dataset_dir, self.dataset_name,
+            self.data = glob(os.path.join(base_dir, self.dataset_dir, self.dataset_name,'images',
                                           self.input_fname_pattern))
             imreadImg = imread(self.data[0])
             # print('path: ', self.data[0])
@@ -227,7 +227,7 @@ class DCGAN(object):
 
             else:
                 self.data = glob(os.path.join(
-                    base_dir, self.dataset_dir, config.dataset,
+                    base_dir, self.dataset_dir, config.dataset,'images',
                     self.input_fname_pattern))
                 batch_idxs = min(len(self.data), config.train_size) // config.batch_size
 

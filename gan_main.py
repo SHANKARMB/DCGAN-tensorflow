@@ -7,8 +7,8 @@ from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
 
 # base_dir = "/content/training/"
-# base_dir = "/home/prime/ProjectWork/training/"
-base_dir = '/home/cprmi01/FinalSemProject/training'
+base_dir = "/home/prime/ProjectWork/training/"
+# base_dir = '/home/cprmi01/FinalSemProject/training'
 
 flags = tf.app.flags
 flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]")
@@ -33,7 +33,7 @@ flags.DEFINE_integer("num_classes", 10, "Number of classes to train on. [100]")
 flags.DEFINE_integer("generate_test_images", 2, "Number of images to generate during test. [100]")
 flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
 flags.DEFINE_string("dataset_dir", "dataset/gan_files/", "Dataset dir where data is in 'dataset' dir")
-flags.DEFINE_string("dataset", "images10", "The name of dataset [images10,celebA, mnist, lsun]")
+flags.DEFINE_string("dataset", "images101", "The name of dataset [images10,celebA, mnist, lsun]")
 
 FLAGS = flags.FLAGS
 
