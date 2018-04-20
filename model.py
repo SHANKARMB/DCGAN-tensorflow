@@ -593,16 +593,23 @@ class DCGAN(object):
 
         num_images = 0
         for i in data:
-            num_images = num_images + i['count']
+            num_images = num_images + int(i['count'])
+
+        print('num_images are', num_images)
         images_list = ['' for _ in range(num_images)]
         labels_list = [0 for _ in range(num_images)]
         x = random.sample(range(num_images), num_images)
+        for i in range(num_images):
+            if i not in x:
+                print(i, ' not in x')
+
         count = 0
         for i in data:
-            for j in range(i['count']):
+            for j in range(int(i['count'])):
                 images_list.insert(x[count], str(i['index']) + '_' + str(j) + '.jpg')
                 labels_list.insert(x[count], i['index'])
                 count = count + 1
+        print('count', count)
         print('images_list[:10] ', images_list[:10])
         print('labels_list[:10] ', labels_list[:10])
         return images_list, labels_list
