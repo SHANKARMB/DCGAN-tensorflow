@@ -598,6 +598,8 @@ class DCGAN(object):
         print('num_images are', num_images)
         images_list = ['' for _ in range(num_images)]
         labels_list = [0 for _ in range(num_images)]
+        print('len(images_list)', len(images_list))
+        print('len(labels_list)', len(labels_list))
         x = random.sample(range(num_images), num_images)
         for i in range(num_images):
             if i not in x:
@@ -610,6 +612,8 @@ class DCGAN(object):
                 labels_list.insert(x[count], i['index'])
                 count = count + 1
         print('count', count)
+        print('len(images_list)', len(images_list))
+        print('len(labels_list)', len(labels_list))
         print('images_list[:10] ', images_list[:10])
         print('labels_list[:10] ', labels_list[:10])
         return images_list, labels_list
