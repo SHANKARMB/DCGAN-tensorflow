@@ -28,6 +28,7 @@ class DCGAN(object):
                  ):
         """
 
+
     Args:
       sess: TensorFlow session
       batch_size: The size of batch. Should be specified before training.
@@ -96,7 +97,6 @@ class DCGAN(object):
             print('--------------------_____________________----------------------------')
 
             # _______________________________---------------------------__________________
-
 
         else:
             # contains a list of path matching the pattern
