@@ -22,7 +22,7 @@ class DCGAN(object):
                  y_dim=None, z_dim=100, gf_dim=64, df_dim=64,
                  gfc_dim=1024, dfc_dim=1024, c_dim=3, dataset_name='default',
                  input_fname_pattern='*.jpg', checkpoint_dir=None, sample_dir=None, dataset_dir=None,
-                 base_dir=None
+                 base_dir=None, num_test_images=10
                  ):
         """
 
@@ -30,13 +30,14 @@ class DCGAN(object):
       sess: TensorFlow session
       batch_size: The size of batch. Should be specified before training.
       y_dim: (optional) Dimension of dim for y. [None] classes / labels
-      z_dim: (optional) Dimension of dim for Z. [100]
+      z_dim: (optional) Dimension of dim for Z. [100] num of points in noise
       gf_dim: (optional) Dimension of gen filters in first conv layer. [64]
       df_dim: (optional) Dimension of discrim filters in first conv layer. [64]
       gfc_dim: (optional) Dimension of gen units for for fully connected layer. [1024]
       dfc_dim: (optional) Dimension of discrim units for fully connected layer. [1024]
       c_dim: (optional) Dimension of image color. For grayscale input, set to 1. [3]
     """
+        self.labels_to_names = {}
         self.dataset_dir = dataset_dir
         self.sess = sess
         self.crop = crop
@@ -48,7 +49,7 @@ class DCGAN(object):
         self.input_width = input_width
         self.output_height = output_height
         self.output_width = output_width
-
+        self.num_test_images = num_test_images
         self.y_dim = y_dim
         self.z_dim = z_dim
 
@@ -387,7 +388,7 @@ class DCGAN(object):
                         save_images(samples, image_manifold_size(samples.shape[0]),
                                     './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
                         print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
-
+                        print('sample labels are..', sample_labels)
                     else:
                         try:
                             samples, d_loss, g_loss = self.sess.run(
@@ -594,7 +595,7 @@ class DCGAN(object):
         num_images = 0
         for i in data:
             num_images = num_images + int(i['count'])
-
+            self.labels_to_names[i['index']] = i['name']
         print('num_images are', num_images)
         images_list = ['' for _ in range(num_images)]
         labels_list = [0 for _ in range(num_images)]
@@ -610,6 +611,8 @@ class DCGAN(object):
             for j in range(int(i['count'])):
                 images_list[x[count]] = str(i['index']) + '_' + str(j) + '.jpg'
                 labels_list[x[count]] = i['index']
+                # images_list[count] = str(i['index']) + '_' + str(j) + '.jpg'
+                # labels_list[count] = i['index']
                 count = count + 1
         print('count', count)
         print('len(images_list)', len(images_list))

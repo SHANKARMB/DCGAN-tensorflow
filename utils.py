@@ -192,7 +192,7 @@ def visualize(sess, dcgan, config, option):
                     './samples/test_%s.png' % strftime("%Y-%m-%d-%H-%M-%S", gmtime()))
     elif option == 1:
         values = np.arange(0, 1, 1. / config.batch_size)
-        for idx in xrange(dcgan.z_dim):
+        for idx in xrange(dcgan.num_test_images):
             print(" [*] %d" % idx)
             z_sample = np.random.uniform(-1, 1, size=(config.batch_size, dcgan.z_dim))
             for kdx, z in enumerate(z_sample):
@@ -207,6 +207,8 @@ def visualize(sess, dcgan, config, option):
 
             elif config.dataset == 'images10':
                 y = np.random.choice(10, config.batch_size)
+                print('labels_to_names are.. ', dcgan.labels_to_names)
+                print('Classes are..', y)
                 y_one_hot = np.zeros((config.batch_size, 10))
                 y_one_hot[np.arange(config.batch_size), y] = 1
 

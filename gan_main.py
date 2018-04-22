@@ -24,7 +24,7 @@ flags.DEFINE_boolean("crop", False, "True for training, False for testing [False
 flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothing [False]")
 
 # changed
-flags.DEFINE_integer("epoch", 5000, "Epoch to train [25]")
+flags.DEFINE_integer("epoch", 10000, "Epoch to train [25]")
 flags.DEFINE_integer("batch_size", 64, "The size of batch images [64]")
 flags.DEFINE_integer("input_height", 128, "The size of image to use (will be center cropped). [108]")
 flags.DEFINE_integer("input_width", 128,
@@ -33,7 +33,8 @@ flags.DEFINE_integer("output_height", 128, "The size of the output images to pro
 flags.DEFINE_integer("output_width", 128,
                      "The size of the output images to produce. If None, same value as output_height [None]")
 flags.DEFINE_integer("num_classes", 10, "Number of classes to train on. [100]")
-flags.DEFINE_integer("generate_test_images", 5, "Number of images to generate during test. [100]")
+flags.DEFINE_integer("num_test_images", 10, "Number of classes to train on. [100]")
+flags.DEFINE_integer("generate_test_images", 200, "Number of images to generate during test. [100]")
 flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
 flags.DEFINE_string("dataset_dir", "dataset/gan_files/", "Dataset dir where data is in 'dataset' dir")
 flags.DEFINE_string("dataset", "images10", "The name of dataset [images10,celebA, mnist, lsun]")
@@ -47,7 +48,7 @@ def train_gan(learning_rate=0.0002, input_width=128, input_height=128,
               sample_dir='samples', dataset='images10', batch_size=32,
               num_classes=10, generate_test_images=5,
               input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
-              crop=False, train=True, base_dir_index=0
+              crop=False, train=True, base_dir_index=0, num_test_images=10
               ):
     print('started')
     FLAGS.learning_rate = learning_rate
@@ -66,6 +67,8 @@ def train_gan(learning_rate=0.0002, input_width=128, input_height=128,
     FLAGS.crop = crop
     FLAGS.train = train
     FLAGS.base_dir = base_dirs[base_dir_index]
+    FLAGS.num_test_images = num_test_images
+
     tf.app.run(main=main)
 
 
@@ -75,7 +78,7 @@ def test_gan(learning_rate=0.0002, input_width=128, input_height=128,
              num_classes=10, generate_test_images=5,
              input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
              crop=False, train=False
-             , base_dir_index=0):
+             , base_dir_index=0, num_test_images=10):
     FLAGS.learning_rate = learning_rate
     FLAGS.input_width = input_width
     FLAGS.input_height = input_height
@@ -92,6 +95,7 @@ def test_gan(learning_rate=0.0002, input_width=128, input_height=128,
     FLAGS.crop = crop
     FLAGS.train = train
     FLAGS.base_dir = base_dirs[base_dir_index]
+    FLAGS.num_test_images = num_test_images
     print('train', FLAGS.train)
     tf.app.run(main=main)
 
@@ -130,7 +134,9 @@ def main(_):
                 crop=FLAGS.crop,
                 checkpoint_dir=FLAGS.checkpoint_dir,
                 sample_dir=FLAGS.sample_dir,
-                base_dir=FLAGS.base_dir
+                base_dir=FLAGS.base_dir,
+                num_test_images=FLAGS.num_test_images
+
 
             )
         elif FLAGS.dataset == 'images10':
@@ -150,7 +156,8 @@ def main(_):
                 checkpoint_dir=FLAGS.checkpoint_dir,
                 sample_dir=FLAGS.sample_dir,
                 dataset_dir=FLAGS.dataset_dir,
-                base_dir=FLAGS.base_dir
+                base_dir=FLAGS.base_dir,
+                num_test_images=FLAGS.num_test_images
 
             )
         else:
@@ -169,7 +176,8 @@ def main(_):
                 checkpoint_dir=FLAGS.checkpoint_dir,
                 sample_dir=FLAGS.sample_dir,
                 dataset_dir=FLAGS.dataset_dir,
-                base_dir=FLAGS.base_dir
+                base_dir=FLAGS.base_dir,
+                num_test_images=FLAGS.num_test_images
             )
 
         show_all_variables()
