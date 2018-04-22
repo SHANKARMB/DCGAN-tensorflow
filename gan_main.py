@@ -20,7 +20,7 @@ else:
     print('Please select the gpu...')
     exit()
 
-print('added GPU ', gpu, 'to ')
+print('using GPU ', gpu)
 from model import DCGAN
 from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
