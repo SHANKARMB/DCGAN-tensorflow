@@ -22,7 +22,9 @@ class DCGAN(object):
                  y_dim=None, z_dim=100, gf_dim=64, df_dim=64,
                  gfc_dim=1024, dfc_dim=1024, c_dim=3, dataset_name='default',
                  input_fname_pattern='*.jpg', checkpoint_dir=None, sample_dir=None, dataset_dir=None,
-                 base_dir=None, num_test_images=10
+                 base_dir=None,
+                 num_classes=5,
+                 num_test_images=10
                  ):
         """
 
@@ -38,6 +40,7 @@ class DCGAN(object):
       c_dim: (optional) Dimension of image color. For grayscale input, set to 1. [3]
     """
         self.labels_to_names = {}
+        self.num_classes = num_classes
         self.dataset_dir = dataset_dir
         self.sess = sess
         self.crop = crop
@@ -82,11 +85,11 @@ class DCGAN(object):
             self.data_X, self.data_y = self.load_mnist()
             self.c_dim = self.data_X[0].shape[-1]
 
-        elif self.dataset_name == 'images10':
+        elif self.dataset_name == 'images5':
             print('reading images')
             print('--------------------_____________________----------------------------')
 
-            self.data, self.labels = self.load_images10()
+            self.data, self.labels = self.load_images5()
             self.c_dim = 3
 
             print('read images')
@@ -194,10 +197,10 @@ class DCGAN(object):
             sample_inputs = self.data_X[0:self.sample_num]
             sample_labels = self.data_y[0:self.sample_num]
 
-        elif config.dataset == 'images10':
+        elif config.dataset == 'images5':
             print('reading samples...')
             print('--------------------_____________________----------------------------')
-            sample_inputs, sample_labels = self.get_data_and_labels(0, self.sample_num)
+            sample_inputs, sample_labels = self.get_data_and_labels(0, self.sample_num, True)
         #
         else:
             sample_files = self.data[0:self.sample_num]
@@ -227,7 +230,7 @@ class DCGAN(object):
             if config.dataset == 'mnist':
                 batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
 
-            elif config.dataset == 'images10':
+            elif config.dataset == 'images5':
                 print('config.train_size is ', config.train_size)
                 batch_idxs = min(len(self.data), config.train_size) // config.batch_size
                 print('batch_idxs', batch_idxs)
@@ -243,7 +246,7 @@ class DCGAN(object):
                     batch_images = self.data_X[idx * config.batch_size:(idx + 1) * config.batch_size]
                     batch_labels = self.data_y[idx * config.batch_size:(idx + 1) * config.batch_size]
 
-                elif config.dataset == 'images10':
+                elif config.dataset == 'images5':
                     batch_images, batch_labels = self.get_data_and_labels(idx * config.batch_size,
                                                                           (idx + 1) * config.batch_size)
 
@@ -302,7 +305,7 @@ class DCGAN(object):
                         self.y: batch_labels
                     })
 
-                elif config.dataset == 'images10':
+                elif config.dataset == 'images5':
                     # Update D network
                     _, summary_str = self.sess.run([d_optim, self.d_sum],
                                                    feed_dict={
@@ -376,7 +379,7 @@ class DCGAN(object):
                                     './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
                         print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
 
-                    elif config.dataset == 'images10':
+                    elif config.dataset == 'images5':
                         samples, d_loss, g_loss = self.sess.run(
                             [self.sampler, self.d_loss, self.g_loss],
                             feed_dict={
@@ -388,7 +391,7 @@ class DCGAN(object):
                         save_images(samples, image_manifold_size(samples.shape[0]),
                                     './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
                         print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
-                        print('sample labels are..', sample_labels)
+                        # print('sample labels are..', sample_labels)
                     else:
                         try:
                             samples, d_loss, g_loss = self.sess.run(
@@ -586,7 +589,7 @@ class DCGAN(object):
 
         return X / 255., y_vec
 
-    def load_images10(self):
+    def load_images5(self):
 
         labels_filename = 'labels.txt'
         with open(os.path.join(self.base_dir, self.dataset_dir, self.dataset_name, labels_filename)) as f:
@@ -621,7 +624,7 @@ class DCGAN(object):
         print('labels_list[:10] ', labels_list[:10])
         return images_list, labels_list
 
-    def get_data_and_labels(self, start_index, stop_index):
+    def get_data_and_labels(self, start_index, stop_index, for_samples=False):
 
         sample = [
             get_image(os.path.join(self.base_dir, self.dataset_dir, self.dataset_name, 'images', image_name),
@@ -631,6 +634,18 @@ class DCGAN(object):
                       resize_width=self.output_width,
                       crop=self.crop,
                       grayscale=False) for image_name in self.data[start_index:stop_index]]
+        if for_samples:
+            sample_dict = {}
+            sc = 0
+
+            for image_label in self.labels[start_index:stop_index]:
+                sample_dict[sc] = self.labels_to_names[int(image_label)]
+                sc = sc + 1
+
+            with open(os.path.join(os.getcwd(), 'samples',
+                                   'sample_image_names.txt'), 'w') as outfile:
+                json.dump(sample_dict, outfile)
+
         X = np.array(sample).astype(np.float32)
         y = np.asarray(self.labels[start_index:stop_index]).astype(np.int)
 

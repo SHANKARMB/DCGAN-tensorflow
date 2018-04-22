@@ -205,11 +205,11 @@ def visualize(sess, dcgan, config, option):
 
                 samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
 
-            elif config.dataset == 'images10':
-                y = np.random.choice(10, config.batch_size)
+            elif config.dataset == 'images5':
+                y = np.random.choice(dcgan.num_classes, config.batch_size)
                 print('labels_to_names are.. ', dcgan.labels_to_names)
                 print('Classes are..', y)
-                y_one_hot = np.zeros((config.batch_size, 10))
+                y_one_hot = np.zeros((config.batch_size, dcgan.num_classes))
                 y_one_hot[np.arange(config.batch_size), y] = 1
 
                 samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
@@ -234,7 +234,7 @@ def visualize(sess, dcgan, config, option):
     #
     #             samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
     #
-    #         elif config.dataset == "images10":
+    #         elif config.dataset == "images5":
     #             y = np.random.choice(10, config.batch_size)
     #             y_one_hot = np.zeros((config.batch_size, 10))
     #             y_one_hot[np.arange(config.batch_size), y] = 1

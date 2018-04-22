@@ -32,12 +32,12 @@ flags.DEFINE_integer("input_width", 128,
 flags.DEFINE_integer("output_height", 128, "The size of the output images to produce [64]")
 flags.DEFINE_integer("output_width", 128,
                      "The size of the output images to produce. If None, same value as output_height [None]")
-flags.DEFINE_integer("num_classes", 10, "Number of classes to train on. [100]")
+flags.DEFINE_integer("num_classes", 5, "Number of classes to train on. [100]")
 flags.DEFINE_integer("num_test_images", 10, "Number of classes to train on. [100]")
 flags.DEFINE_integer("generate_test_images", 200, "Number of images to generate during test. [100]")
 flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
 flags.DEFINE_string("dataset_dir", "dataset/gan_files/", "Dataset dir where data is in 'dataset' dir")
-flags.DEFINE_string("dataset", "images10", "The name of dataset [images10,celebA, mnist, lsun]")
+flags.DEFINE_string("dataset", "images5", "The name of dataset [images5,celebA, mnist, lsun]")
 flags.DEFINE_string("base_dir", "/home/prime/ProjectWork/training/", "base dir")
 
 FLAGS = flags.FLAGS
@@ -45,10 +45,11 @@ FLAGS = flags.FLAGS
 
 def train_gan(learning_rate=0.0002, input_width=128, input_height=128,
               output_width=128, output_height=128, checkpoint_dir="trained/gan/",
-              sample_dir='samples', dataset='images10', batch_size=32,
-              num_classes=10, generate_test_images=5,
+              sample_dir='samples', dataset='images5', batch_size=32,
+              num_classes=5, generate_test_images=5,
               input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
               crop=False, train=True, base_dir_index=0, num_test_images=10
+
               ):
     print('started')
     FLAGS.learning_rate = learning_rate
@@ -74,8 +75,8 @@ def train_gan(learning_rate=0.0002, input_width=128, input_height=128,
 
 def test_gan(learning_rate=0.0002, input_width=128, input_height=128,
              output_width=128, output_height=128, checkpoint_dir="trained/gan/",
-             sample_dir='samples', dataset='images10', batch_size=32,
-             num_classes=10, generate_test_images=5,
+             sample_dir='samples', dataset='images5', batch_size=32,
+             num_classes=5, generate_test_images=5,
              input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
              crop=False, train=False
              , base_dir_index=0, num_test_images=10):
@@ -139,7 +140,7 @@ def main(_):
 
 
             )
-        elif FLAGS.dataset == 'images10':
+        elif FLAGS.dataset == 'images5':
             dcgan = DCGAN(
                 sess,
                 input_width=FLAGS.input_width,
