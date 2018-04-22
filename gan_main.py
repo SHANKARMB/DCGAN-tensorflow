@@ -1,7 +1,18 @@
 import os
 import scipy.misc
 import numpy as np
-
+import sys
+if 'gpu0' in sys.argv:
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+elif 'gpu1' in sys.argv:
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+elif 'gpu2' in sys.argv:
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+elif 'gpu3' in sys.argv:
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+else:
+    print('Please select the gpu...')
+    exit()
 from model import DCGAN
 from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
