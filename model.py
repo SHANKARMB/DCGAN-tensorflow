@@ -103,7 +103,7 @@ class DCGAN(object):
             self.data = glob(os.path.join(base_dir, self.dataset_dir, 'images', self.dataset_name,
                                           self.input_fname_pattern))
             print('dataset is ..', os.path.join(base_dir, self.dataset_dir, 'images', self.dataset_name,
-                                          self.input_fname_pattern))
+                                                self.input_fname_pattern))
             imreadImg = imread(self.data[0])
             # print('path: ', self.data[0])
             if len(imreadImg.shape) >= 3:  # check if image is a non-grayscale image by checking channel number
@@ -195,6 +195,9 @@ class DCGAN(object):
 
         sample_z = np.random.uniform(-1, 1, size=(self.sample_num, self.z_dim))
 
+        print('config.train_size is ', config.train_size)
+        print('batch_idxs', min(len(self.data), config.train_size) // config.batch_size)
+
         if config.dataset == 'mnist':
             sample_inputs = self.data_X[0:self.sample_num]
             sample_labels = self.data_y[0:self.sample_num]
@@ -228,22 +231,28 @@ class DCGAN(object):
         else:
             print(" [!] Load failed...")
 
+        print("log_dir..: ", 'log_files')
+
+        if not os.path.exists('log_files'):
+            os.makedirs('log_files')
+
+        log_file_name = os.path.join('log_files/' + 'log_' + str(time.time()))
+        d_loss_list = []
+        g_loss_list = []
         for epoch in xrange(config.epoch):
+
             if config.dataset == 'mnist':
                 batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
 
             elif config.dataset == 'images5':
-                print('config.train_size is ', config.train_size)
                 batch_idxs = min(len(self.data), config.train_size) // config.batch_size
-                print('batch_idxs', batch_idxs)
+
 
             else:
                 self.data = glob(os.path.join(
                     self.base_dir, self.dataset_dir, 'images', config.dataset,
                     self.input_fname_pattern))
-                print('config.train_size is ', config.train_size)
                 batch_idxs = min(len(self.data), config.train_size) // config.batch_size
-                print('batch_idxs', batch_idxs)
 
             for idx in xrange(0, batch_idxs):
                 if config.dataset == 'mnist':
@@ -369,6 +378,17 @@ class DCGAN(object):
                       % (epoch, config.epoch, idx, batch_idxs,
                          time.time() - start_time, errD_fake + errD_real, errG))
 
+                if np.mod(counter, batch_idxs) == batch_idxs - 1:
+                    with open(log_file_name, 'a') as log_file:
+                        log_file.write("Epoch: [%2d/%2d]" % (epoch, config.epoch)
+                                       + '\nd_loss: ' + str(d_loss_list) + '\ng_loss: ' + str(g_loss_list))
+                        print('Saved Epoch loss details to the log file..')
+                        d_loss_list = []
+                        g_loss_list = []
+                else:
+                    d_loss_list.append(errD_fake + errD_real)
+                    g_loss_list.append(errG)
+
                 if np.mod(counter, 100) == 1:
                     if config.dataset == 'mnist':
                         samples, d_loss, g_loss = self.sess.run(
@@ -396,6 +416,7 @@ class DCGAN(object):
                                     './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
                         print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
                         # print('sample labels are..', sample_labels)
+
                     else:
                         try:
                             samples, d_loss, g_loss = self.sess.run(
@@ -408,10 +429,16 @@ class DCGAN(object):
                             save_images(samples, image_manifold_size(samples.shape[0]),
                                         './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
                             print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
+
+                            with open(log_file_name, 'a') as log_file:
+                                log_file.write("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
+                                print('Saved Sample loss details to the log file..')
                         except:
                             print("one pic error!...")
 
                 if np.mod(counter, 500) == 2:
+                    with open(log_file_name, 'a') as log_file:
+                        log_file.write('Checkpoint at c= counter')
                     self.save(config.checkpoint_dir, counter)
 
     def discriminator(self, image, y=None, reuse=False):
@@ -631,7 +658,7 @@ class DCGAN(object):
     def get_data_and_labels(self, start_index, stop_index, for_samples=False):
 
         sample = [
-            get_image(os.path.join(self.base_dir, self.dataset_dir, 'images',self.dataset_name , image_name),
+            get_image(os.path.join(self.base_dir, self.dataset_dir, 'images', self.dataset_name, image_name),
                       input_height=self.input_height,
                       input_width=self.input_width,
                       resize_height=self.output_height,
