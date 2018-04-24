@@ -80,7 +80,7 @@ class DCGAN(object):
         self.dataset_name = dataset_name
         self.input_fname_pattern = input_fname_pattern
         self.checkpoint_dir = checkpoint_dir
-        print('Checkpoint dir: is... ', self.checkpoint_dir)
+        # print('Checkpoint dir: is... ', self.checkpoint_dir)
 
         if self.dataset_name == 'mnist':
             self.data_X, self.data_y = self.load_mnist()
@@ -100,7 +100,9 @@ class DCGAN(object):
 
         else:
             # contains a list of path matching the pattern
-            self.data = glob(os.path.join(base_dir, self.dataset_dir, self.dataset_name, 'images',
+            self.data = glob(os.path.join(base_dir, self.dataset_dir, 'images', self.dataset_name,
+                                          self.input_fname_pattern))
+            print('dataset is ..', os.path.join(base_dir, self.dataset_dir, 'images', self.dataset_name,
                                           self.input_fname_pattern))
             imreadImg = imread(self.data[0])
             # print('path: ', self.data[0])
@@ -237,7 +239,7 @@ class DCGAN(object):
 
             else:
                 self.data = glob(os.path.join(
-                    self.base_dir, self.dataset_dir, config.dataset, 'images',
+                    self.base_dir, self.dataset_dir, 'images', config.dataset,
                     self.input_fname_pattern))
                 batch_idxs = min(len(self.data), config.train_size) // config.batch_size
 
@@ -627,7 +629,7 @@ class DCGAN(object):
     def get_data_and_labels(self, start_index, stop_index, for_samples=False):
 
         sample = [
-            get_image(os.path.join(self.base_dir, self.dataset_dir, self.dataset_name, 'images', image_name),
+            get_image(os.path.join(self.base_dir, self.dataset_dir, 'images',self.dataset_name , image_name),
                       input_height=self.input_height,
                       input_width=self.input_width,
                       resize_height=self.output_height,

@@ -24,14 +24,6 @@ def show_all_variables():
     slim.model_analyzer.analyze_vars(model_vars, print_info=True)
 
 
-def get_image(image_path, input_height, input_width,
-              resize_height=64, resize_width=64,
-              crop=False, grayscale=False):
-    image = imread(image_path, grayscale)
-    return transform(image, input_height, input_width,
-                     resize_height, resize_width, crop)
-
-
 def save_images(images, size, image_path):
     return imsave(inverse_transform(images), size, image_path)
 
@@ -72,6 +64,14 @@ def merge(images, size):
 def imsave(images, size, path):
     image = np.squeeze(merge(images, size))
     return scipy.misc.imsave(path, image)
+
+
+def get_image(image_path, input_height, input_width,
+              resize_height=64, resize_width=64,
+              crop=False, grayscale=False):
+    image = imread(image_path, grayscale)
+    return transform(image, input_height, input_width,
+                     resize_height, resize_width, crop)
 
 
 def center_crop(x, crop_h, crop_w,

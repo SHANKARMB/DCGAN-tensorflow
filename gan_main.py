@@ -3,24 +3,26 @@ import scipy.misc
 import numpy as np
 import sys
 
-gpu = 'None'
-if 'gpu0' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    gpu = '0'
-elif 'gpu1' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-    gpu = '1'
-elif 'gpu2' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-    gpu = '2'
-elif 'gpu3' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
-    gpu = '3'
-else:
-    print('Please select the gpu...')
-    exit()
 
-print('using GPU ', gpu)
+
+# gpu = 'None'
+# if 'gpu0' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+#     gpu = '0'
+# elif 'gpu1' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+#     gpu = '1'
+# elif 'gpu2' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+#     gpu = '2'
+# elif 'gpu3' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+#     gpu = '3'
+# else:
+#     print('Please select the gpu...')
+#     exit()
+#
+# print('using GPU ', gpu)
 from model import DCGAN
 from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
@@ -39,7 +41,7 @@ flags.DEFINE_float("train_size", np.inf, "The size of train images [np.inf]")
 flags.DEFINE_string("input_fname_pattern", "*.jpg", "Glob pattern of filename of input images [*]")
 flags.DEFINE_string("sample_dir", "samples", "Directory name to save the image samples [samples]")
 flags.DEFINE_boolean("train", False, "True for training, False for testing [False]")
-flags.DEFINE_boolean("crop", False, "True for training, False for testing [False]")
+flags.DEFINE_boolean("crop", True, "True for training, False for testing [False]")
 flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothing [False]")
 
 # changed
@@ -51,12 +53,12 @@ flags.DEFINE_integer("input_width", 128,
 flags.DEFINE_integer("output_height", 128, "The size of the output images to produce [64]")
 flags.DEFINE_integer("output_width", 128,
                      "The size of the output images to produce. If None, same value as output_height [None]")
-flags.DEFINE_integer("num_classes", 5, "Number of classes to train on. [100]")
+flags.DEFINE_integer("num_classes", 1, "Number of classes to train on. [100]")
 flags.DEFINE_integer("num_test_images", 10, "Number of classes to train on. [100]")
-flags.DEFINE_integer("generate_test_images", 200, "Number of images to generate during test. [100]")
+flags.DEFINE_integer("noise_dim", 100, "Noise dim [100]")
 flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
-flags.DEFINE_string("dataset_dir", "dataset/gan_files/", "Dataset dir where data is in 'dataset' dir")
-flags.DEFINE_string("dataset", "images5", "The name of dataset [images5,celebA, mnist, lsun]")
+flags.DEFINE_string("dataset_dir", "dataset/gan_files/images10", "Dataset dir where data is in 'dataset' dir")
+flags.DEFINE_string("dataset", "airplane", "The name of dataset [images5,celebA, mnist, lsun]")
 flags.DEFINE_string("base_dir", "/home/prime/ProjectWork/training/", "base dir")
 
 FLAGS = flags.FLAGS
@@ -65,7 +67,7 @@ FLAGS = flags.FLAGS
 def train_gan(learning_rate=0.0002, input_width=128, input_height=128,
               output_width=128, output_height=128, checkpoint_dir="trained/gan/",
               sample_dir='samples', dataset='images5', batch_size=32,
-              num_classes=5, generate_test_images=5,
+              num_classes=5, noise_dim=200,
               input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
               crop=False, train=True, base_dir_index=0, num_test_images=10
 
@@ -81,7 +83,7 @@ def train_gan(learning_rate=0.0002, input_width=128, input_height=128,
     FLAGS.dataset = dataset
     FLAGS.batch_size = batch_size
     FLAGS.num_classes = num_classes
-    FLAGS.generate_test_images = generate_test_images
+    FLAGS.noise_dim = noise_dim
     FLAGS.input_fname_pattern = input_fname_pattern
     FLAGS.dataset_dir = dataset_dir
     FLAGS.crop = crop
@@ -95,7 +97,7 @@ def train_gan(learning_rate=0.0002, input_width=128, input_height=128,
 def test_gan(learning_rate=0.0002, input_width=128, input_height=128,
              output_width=128, output_height=128, checkpoint_dir="trained/gan/",
              sample_dir='samples', dataset='images5', batch_size=32,
-             num_classes=5, generate_test_images=5,
+             num_classes=5, noise_dim=200,
              input_fname_pattern='*.jpg', dataset_dir='dataset/gan_files/',
              crop=False, train=False
              , base_dir_index=0, num_test_images=10):
@@ -109,7 +111,7 @@ def test_gan(learning_rate=0.0002, input_width=128, input_height=128,
     FLAGS.dataset = dataset
     FLAGS.batch_size = batch_size
     FLAGS.num_classes = num_classes
-    FLAGS.generate_test_images = generate_test_images
+    FLAGS.noise_dim = noise_dim
     FLAGS.input_fname_pattern = input_fname_pattern
     FLAGS.dataset_dir = dataset_dir
     FLAGS.crop = crop
@@ -148,7 +150,7 @@ def main(_):
                 batch_size=FLAGS.batch_size,
                 sample_num=FLAGS.batch_size,
                 y_dim=FLAGS.num_classes,
-                z_dim=FLAGS.generate_test_images,
+                z_dim=FLAGS.noise_dim,
                 dataset_name=FLAGS.dataset,
                 input_fname_pattern=FLAGS.input_fname_pattern,
                 crop=FLAGS.crop,
@@ -168,7 +170,7 @@ def main(_):
                 batch_size=FLAGS.batch_size,
                 sample_num=FLAGS.batch_size,
                 y_dim=FLAGS.num_classes,
-                z_dim=FLAGS.generate_test_images,
+                z_dim=FLAGS.noise_dim,
                 dataset_name=FLAGS.dataset,
                 input_fname_pattern=FLAGS.input_fname_pattern,
                 crop=FLAGS.crop,
@@ -188,7 +190,7 @@ def main(_):
                 output_height=FLAGS.output_height,
                 batch_size=FLAGS.batch_size,
                 sample_num=FLAGS.batch_size,
-                z_dim=FLAGS.generate_test_images,
+                z_dim=FLAGS.noise_dim,
                 dataset_name=FLAGS.dataset,
                 input_fname_pattern=FLAGS.input_fname_pattern,
                 crop=FLAGS.crop,
