@@ -381,7 +381,7 @@ class DCGAN(object):
                 if np.mod(counter, batch_idxs) == batch_idxs - 1:
                     with open(log_file_name, 'a') as log_file:
                         log_file.write("Epoch: [%2d/%2d]" % (epoch, config.epoch)
-                                       + '\nd_loss: ' + str(d_loss_list) + '\ng_loss: ' + str(g_loss_list))
+                                       + '\nd_loss: ' + str(d_loss_list) + '\ng_loss: ' + str(g_loss_list)+'\n')
                         print('Saved Epoch loss details to the log file..')
                         d_loss_list = []
                         g_loss_list = []
@@ -431,14 +431,14 @@ class DCGAN(object):
                             print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
 
                             with open(log_file_name, 'a') as log_file:
-                                log_file.write("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
+                                log_file.write("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss)+'\n')
                                 print('Saved Sample loss details to the log file..')
                         except:
                             print("one pic error!...")
 
                 if np.mod(counter, 500) == 2:
                     with open(log_file_name, 'a') as log_file:
-                        log_file.write('Checkpoint at c= counter')
+                        log_file.write('Checkpoint at c= counter\n')
                     self.save(config.checkpoint_dir, counter)
 
     def discriminator(self, image, y=None, reuse=False):
