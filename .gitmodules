@@ -1,0 +1,3 @@
+[submodule "inception_score"]
+	path = inception_score
+	url = https://github.com/SHANKARMB/chainer-inception-score.git
