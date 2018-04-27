@@ -240,7 +240,7 @@ class DCGAN(object):
         if not os.path.exists('log_files'):
             os.makedirs('log_files')
 
-        log_file_name = os.path.join('log_files/' + 'log_' + str(time.time()*100))
+        log_file_name = os.path.join('log_files/' + 'log_' + str(time.time() * 100))
         print('log_file_name is ', log_file_name)
         d_loss_list = []
         g_loss_list = []
@@ -264,7 +264,7 @@ class DCGAN(object):
             # call inception score module
             print('sample_files', sample_files)
             real_incep_mean, real_incep_std = incep_score_main.main(arg_data_list=sample_files,
-                                                                    arg_gpu=None,
+                                                                    arg_gpu=3,
                                                                     d=d
                                                                     )
 
@@ -495,8 +495,9 @@ class DCGAN(object):
                         self.inputs: sample_inputs,
                     },
                 )
-                sample_image_file_name = './samples/train_{:02d}_{:04d}.png' \
-                    .format( epoch, batch_idxs)
+                os.makedirs('samples/' + self.dataset_name, exist_ok=True)
+                sample_image_file_name = './samples/{}/train_{:02d}_{:04d}.png' \
+                    .format(self.dataset_name, epoch, batch_idxs)
 
                 save_images(samples, image_manifold_size(samples.shape[0]),
                             sample_image_file_name
@@ -510,7 +511,7 @@ class DCGAN(object):
                 # print('d is . ', d)
                 # call inception score module
                 incep_mean, incep_std = incep_score_main.main(arg_data_list=crop_images_path,
-                                                              arg_gpu=None,
+                                                              arg_gpu=3,
                                                               d=0
                                                               )
 
@@ -550,7 +551,7 @@ class DCGAN(object):
                     div_distances_list = sorted(div_distances_list, key=lambda r: r['dist'])
 
                 with open(log_file_name, 'a') as log_file:
-                    log_file.write( str(div_distances_list) + '\n')
+                    log_file.write(str(div_distances_list) + '\n')
                     # print('Saved Sample loss details to the log file..')
             except Exception as ex:
                 print('Exception is .... ', ex)

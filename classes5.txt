@@ -1,5 +1,5 @@
 airplane
-hot-air_balloon
 butterfly
-flowers
 chair
+flower
+hotair_balloon

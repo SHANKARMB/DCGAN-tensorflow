@@ -3,11 +3,11 @@ import shutil
 import json
 
 root_dir = '/home/prime/ProjectWork/training/dataset'
-current_dataset_path = 'sketchy/images and sketches mapped/256x256/photo/tx_000000000000'
+current_dataset_path = 'gan_files/all_images'
 final_root_dir = os.path.join(root_dir, 'gan_files')
-final_dataset_name = 'images10'
+final_dataset_name = 'images5'
 
-classes_list_path = 'classes10.txt'
+classes_list_path = 'classes5.txt'
 classes_list = []
 with open(classes_list_path) as f:
     classes_list.extend(f.read().splitlines())
@@ -28,15 +28,16 @@ for c in classes_list:
     else:
         print(c, "Doesn't Exists")
         continue
-
+    os.makedirs(os.path.join(final_root_dir, final_dataset_name, 'images', c), exist_ok=True)
 
     count = 0
 
     for filename in os.listdir(os.path.join(root_dir, current_dataset_path, c)):
-        # print(filename)
+        if c == 'airplane' and count == 145:
+            print(filename)
         initial_img = os.path.join(root_dir, current_dataset_path, c, filename)
         final_filename = str(folder_count) + '_' + str(count) + '.jpg'
-        final_img = os.path.join(final_root_dir, final_dataset_name, 'images', final_filename)
+        final_img = os.path.join(final_root_dir, final_dataset_name, 'images', c, final_filename)
         shutil.copy(initial_img, final_img)
         count = count + 1
 
