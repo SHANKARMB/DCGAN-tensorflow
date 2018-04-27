@@ -534,7 +534,8 @@ class DCGAN(object):
 
                         record = {'dist': div_distance,
                                   'ckpt_name': ckpt_name,
-                                  'counter': counter
+                                  'counter': counter,
+                                  'epoch': epoch
                                   }
 
                         div_distances_list.append(record)
