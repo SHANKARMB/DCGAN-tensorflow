@@ -495,8 +495,8 @@ class DCGAN(object):
                         self.inputs: sample_inputs,
                     },
                 )
-                sample_image_file_name = './{}/train_{:02d}_{:04d}.png' \
-                    .format('cropped_sample_images', epoch, batch_idxs)
+                sample_image_file_name = './samples/train_{:02d}_{:04d}.png' \
+                    .format( epoch, batch_idxs)
 
                 save_images(samples, image_manifold_size(samples.shape[0]),
                             sample_image_file_name
