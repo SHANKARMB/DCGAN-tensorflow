@@ -526,7 +526,7 @@ class DCGAN(object):
                     div_distance = divergence.main(np.array(m1), np.array(v1), np.array(m2), np.array(v2))
                     print('div_distance ', div_distance)
                     if len(div_distances_list) != 0 and div_distance <= div_distances_list[-1]['dist']:
-                        if len(div_distances_list) == 5:
+                        if len(div_distances_list) == 10:
                             print('removed ', div_distances_list.pop(-1))
 
                         self.save(config.checkpoint_dir, counter)
@@ -541,7 +541,7 @@ class DCGAN(object):
                         print('added ', record)
                         div_distances_list = sorted(div_distances_list, key=lambda r: r['dist'])
 
-                    elif len(div_distances_list) == 0 or len(div_distances_list) < 5:
+                    elif len(div_distances_list) == 0 or len(div_distances_list) < 10:
                         self.save(config.checkpoint_dir, counter)
                         ckpt_name = 'DCGAN.model-' + str(counter)
 
