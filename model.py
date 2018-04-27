@@ -455,7 +455,8 @@ class DCGAN(object):
                             }
                         )
                         save_images(samples, image_manifold_size(samples.shape[0]),
-                                    './{}/{}/train_{:02d}_{:04d}.png'.format(config.sample_dir,self.dataset_name, epoch, idx))
+                                    './{}/{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, self.dataset_name,
+                                                                             epoch, idx))
                         print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
                         # print('sample labels are..', sample_labels)
 
@@ -471,7 +472,8 @@ class DCGAN(object):
                                 },
                             )
                             save_images(samples, image_manifold_size(samples.shape[0]),
-                                        './{}/{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, self.dataset_name, epoch, idx))
+                                        './{}/{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, self.dataset_name,
+                                                                                 epoch, idx))
                             print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
 
                             # with open(log_file_name, 'a') as log_file:
@@ -487,8 +489,8 @@ class DCGAN(object):
             #         call inception-score
             # make a list and insert and pop or leave it as it is..
 
-            os.makedirs('cropped_sample_images', exist_ok=True)
-            if epoch % 5 == 0:
+            os.makedirs('cropped_sample_images/' + self.dataset_name, exist_ok=True)
+            if epoch > 100 and epoch % 5 == 0:
                 try:
                     samples, _, _ = self.sess.run(
                         [self.sampler, self.d_loss, self.g_loss],
@@ -508,7 +510,7 @@ class DCGAN(object):
                     dir_path = os.path.dirname(os.path.realpath(__file__))
                     # print('os.getcwd() is ', os.getcwd())
                     # print('dir_path is ', dir_path)
-                    crop_image_path = os.path.join(dir_path, 'cropped_sample_images')
+                    crop_image_path = os.path.join(dir_path, 'cropped_sample_images' + self.dataset_name)
                     crop_images_path = crop_images.crop(crop_image_path, sample_image_file_name, 128, 128)
                     # print('d is . ', d)
                     # call inception score module
