@@ -240,7 +240,7 @@ class DCGAN(object):
         if not os.path.exists('log_files'):
             os.makedirs('log_files')
 
-        log_file_name = os.path.join('log_files/' + 'log_' + str(time.time() * 100))
+        log_file_name = os.path.join('log_files/' + 'log_' + self.dataset_name + str(time.time() * 100))
         print('log_file_name is ', log_file_name)
         d_loss_list = []
         g_loss_list = []
@@ -264,7 +264,7 @@ class DCGAN(object):
             # call inception score module
             print('sample_files', sample_files)
             real_incep_mean, real_incep_std = incep_score_main.main(arg_data_list=sample_files,
-                                                                    arg_gpu=3,
+                                                                    arg_gpu=None,
                                                                     d=d
                                                                     )
 
@@ -441,7 +441,8 @@ class DCGAN(object):
                             }
                         )
                         save_images(samples, image_manifold_size(samples.shape[0]),
-                                    './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
+                                    './{}/{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, self.dataset_name,
+                                                                             epoch, idx))
                         print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
 
                     elif config.dataset == 'images5':
@@ -454,7 +455,7 @@ class DCGAN(object):
                             }
                         )
                         save_images(samples, image_manifold_size(samples.shape[0]),
-                                    './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
+                                    './{}/{}/train_{:02d}_{:04d}.png'.format(config.sample_dir,self.dataset_name, epoch, idx))
                         print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
                         # print('sample labels are..', sample_labels)
 
@@ -470,7 +471,7 @@ class DCGAN(object):
                                 },
                             )
                             save_images(samples, image_manifold_size(samples.shape[0]),
-                                        './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
+                                        './{}/{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, self.dataset_name, epoch, idx))
                             print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
 
                             # with open(log_file_name, 'a') as log_file:
@@ -487,74 +488,75 @@ class DCGAN(object):
             # make a list and insert and pop or leave it as it is..
 
             os.makedirs('cropped_sample_images', exist_ok=True)
-            try:
-                samples, _, _ = self.sess.run(
-                    [self.sampler, self.d_loss, self.g_loss],
-                    feed_dict={
-                        self.z: sample_z,
-                        self.inputs: sample_inputs,
-                    },
-                )
-                os.makedirs('samples/' + self.dataset_name, exist_ok=True)
-                sample_image_file_name = './samples/{}/train_{:02d}_{:04d}.png' \
-                    .format(self.dataset_name, epoch, batch_idxs)
+            if epoch % 5 == 0:
+                try:
+                    samples, _, _ = self.sess.run(
+                        [self.sampler, self.d_loss, self.g_loss],
+                        feed_dict={
+                            self.z: sample_z,
+                            self.inputs: sample_inputs,
+                        },
+                    )
+                    os.makedirs('samples/' + self.dataset_name, exist_ok=True)
+                    sample_image_file_name = './samples/{}/train_{:02d}_{:04d}.png' \
+                        .format(self.dataset_name, epoch, batch_idxs)
 
-                save_images(samples, image_manifold_size(samples.shape[0]),
-                            sample_image_file_name
-                            )
+                    save_images(samples, image_manifold_size(samples.shape[0]),
+                                sample_image_file_name
+                                )
 
-                dir_path = os.path.dirname(os.path.realpath(__file__))
-                # print('os.getcwd() is ', os.getcwd())
-                # print('dir_path is ', dir_path)
-                crop_image_path = os.path.join(dir_path, 'cropped_sample_images')
-                crop_images_path = crop_images.crop(crop_image_path, sample_image_file_name, 128, 128)
-                # print('d is . ', d)
-                # call inception score module
-                incep_mean, incep_std = incep_score_main.main(arg_data_list=crop_images_path,
-                                                              arg_gpu=3,
-                                                              d=0
-                                                              )
+                    dir_path = os.path.dirname(os.path.realpath(__file__))
+                    # print('os.getcwd() is ', os.getcwd())
+                    # print('dir_path is ', dir_path)
+                    crop_image_path = os.path.join(dir_path, 'cropped_sample_images')
+                    crop_images_path = crop_images.crop(crop_image_path, sample_image_file_name, 128, 128)
+                    # print('d is . ', d)
+                    # call inception score module
+                    incep_mean, incep_std = incep_score_main.main(arg_data_list=crop_images_path,
+                                                                  arg_gpu=None,
+                                                                  d=0
+                                                                  )
 
-                # print('incep_mean, incep_std = ', incep_mean, incep_std)
-                # print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
-                m2, v2 = [incep_mean], [math.pow(incep_std, 2)]
-                # gau_kl(numpy.array(m1), numpy.array(v1), numpy.array(m2), numpy.array(v2))
-                div_distance = divergence.main(np.array(m1), np.array(v1), np.array(m2), np.array(v2))
-                print('div_distance ', div_distance)
-                if len(div_distances_list) != 0 and div_distance <= div_distances_list[-1]['dist']:
-                    if len(div_distances_list) == 5:
-                        print('removed ', div_distances_list.pop(-1))
+                    # print('incep_mean, incep_std = ', incep_mean, incep_std)
+                    # print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
+                    m2, v2 = [incep_mean], [math.pow(incep_std, 2)]
+                    # gau_kl(numpy.array(m1), numpy.array(v1), numpy.array(m2), numpy.array(v2))
+                    div_distance = divergence.main(np.array(m1), np.array(v1), np.array(m2), np.array(v2))
+                    print('div_distance ', div_distance)
+                    if len(div_distances_list) != 0 and div_distance <= div_distances_list[-1]['dist']:
+                        if len(div_distances_list) == 5:
+                            print('removed ', div_distances_list.pop(-1))
 
-                    self.save(config.checkpoint_dir, counter)
-                    ckpt_name = 'DCGAN.model-' + str(counter)
+                        self.save(config.checkpoint_dir, counter)
+                        ckpt_name = 'DCGAN.model-' + str(counter)
 
-                    record = {'dist': div_distance,
-                              'ckpt_name': ckpt_name,
-                              'counter': counter
-                              }
+                        record = {'dist': div_distance,
+                                  'ckpt_name': ckpt_name,
+                                  'counter': counter
+                                  }
 
-                    div_distances_list.append(record)
-                    print('added ', record)
-                    div_distances_list = sorted(div_distances_list, key=lambda r: r['dist'])
+                        div_distances_list.append(record)
+                        print('added ', record)
+                        div_distances_list = sorted(div_distances_list, key=lambda r: r['dist'])
 
-                elif len(div_distances_list) == 0:
-                    self.save(config.checkpoint_dir, counter)
-                    ckpt_name = 'DCGAN.model-' + str(counter)
+                    elif len(div_distances_list) == 0:
+                        self.save(config.checkpoint_dir, counter)
+                        ckpt_name = 'DCGAN.model-' + str(counter)
 
-                    record = {'dist': div_distance,
-                              'ckpt_name': ckpt_name,
-                              'counter': counter
-                              }
+                        record = {'dist': div_distance,
+                                  'ckpt_name': ckpt_name,
+                                  'counter': counter
+                                  }
 
-                    div_distances_list.append(record)
-                    print('added ', record)
-                    div_distances_list = sorted(div_distances_list, key=lambda r: r['dist'])
+                        div_distances_list.append(record)
+                        print('added ', record)
+                        div_distances_list = sorted(div_distances_list, key=lambda r: r['dist'])
 
-                with open(log_file_name, 'a') as log_file:
-                    log_file.write(str(div_distances_list) + '\n')
-                    # print('Saved Sample loss details to the log file..')
-            except Exception as ex:
-                print('Exception is .... ', ex)
+                    with open(log_file_name, 'a') as log_file:
+                        log_file.write(str(div_distances_list) + '\n')
+                        # print('Saved Sample loss details to the log file..')
+                except Exception as ex:
+                    print('Exception is .... ', ex)
 
     def discriminator(self, image, y=None, reuse=False):
         with tf.variable_scope("discriminator") as scope:

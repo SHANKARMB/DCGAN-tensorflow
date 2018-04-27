@@ -5,24 +5,24 @@ import sys
 
 
 
-# gpu = 'None'
-# if 'gpu0' in sys.argv:
-#     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-#     gpu = '0'
-# elif 'gpu1' in sys.argv:
-#     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-#     gpu = '1'
-# elif 'gpu2' in sys.argv:
-#     os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-#     gpu = '2'
-# elif 'gpu3' in sys.argv:
-#     os.environ['CUDA_VISIBLE_DEVICES'] = '3'
-#     gpu = '3'
-# else:
-#     print('Please select the gpu...')
-#     exit()
-#
-# print('using GPU ', gpu)
+gpu = 'None'
+if 'gpu0' in sys.argv:
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    gpu = '0'
+elif 'gpu1' in sys.argv:
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    gpu = '1'
+elif 'gpu2' in sys.argv:
+    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+    gpu = '2'
+elif 'gpu3' in sys.argv:
+    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+    gpu = '3'
+else:
+    print('Please select the gpu...')
+    exit()
+
+print('using GPU ', gpu)
 from model import DCGAN
 from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
@@ -39,7 +39,7 @@ flags.DEFINE_float("learning_rate", 0.0002, "Learning rate of for adam [0.0002]"
 flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_float("train_size", np.inf, "The size of train images [np.inf]")
 flags.DEFINE_string("input_fname_pattern", "*.jpg", "Glob pattern of filename of input images [*]")
-flags.DEFINE_string("sample_dir", "samples", "Directory name to save the image samples [samples]")
+flags.DEFINE_string("sample_dir", "samples_all", "Directory name to save the image samples [samples]")
 flags.DEFINE_boolean("train", True, "True for training, False for testing [False]")
 flags.DEFINE_boolean("crop", True, "True for training, False for testing [False]")
 flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothing [False]")
@@ -57,7 +57,7 @@ flags.DEFINE_integer("num_classes", 1, "Number of classes to train on. [100]")
 flags.DEFINE_integer("num_test_images", 10, "Number of classes to train on. [100]")
 flags.DEFINE_integer("noise_dim", 100, "Noise dim [100]")
 flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
-flags.DEFINE_string("dataset_dir", "dataset/gan_files/images10", "Dataset dir where data is in 'dataset' dir")
+flags.DEFINE_string("dataset_dir", "dataset/gan_files/images5", "Dataset dir where data is in 'dataset' dir")
 flags.DEFINE_string("dataset", "airplane", "The name of dataset [images5,celebA, mnist, lsun]")
 flags.DEFINE_string("base_dir", "/home/prime/ProjectWork/training/", "base dir")
 
