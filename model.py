@@ -490,7 +490,7 @@ class DCGAN(object):
             # make a list and insert and pop or leave it as it is..
 
             os.makedirs('cropped_sample_images/' + self.dataset_name, exist_ok=True)
-            if epoch > 100 and epoch % 5 == 0:
+            if epoch > 100 and epoch % 10 == 0:
                 try:
                     samples, _, _ = self.sess.run(
                         [self.sampler, self.d_loss, self.g_loss],
@@ -510,7 +510,7 @@ class DCGAN(object):
                     dir_path = os.path.dirname(os.path.realpath(__file__))
                     # print('os.getcwd() is ', os.getcwd())
                     # print('dir_path is ', dir_path)
-                    crop_image_path = os.path.join(dir_path, 'cropped_sample_images' + self.dataset_name)
+                    crop_image_path = os.path.join(dir_path, 'cropped_sample_images/' + self.dataset_name)
                     crop_images_path = crop_images.crop(crop_image_path, sample_image_file_name, 128, 128)
                     # print('d is . ', d)
                     # call inception score module
@@ -541,7 +541,7 @@ class DCGAN(object):
                         print('added ', record)
                         div_distances_list = sorted(div_distances_list, key=lambda r: r['dist'])
 
-                    elif len(div_distances_list) == 0:
+                    elif len(div_distances_list) == 0 or len(div_distances_list) < 5:
                         self.save(config.checkpoint_dir, counter)
                         ckpt_name = 'DCGAN.model-' + str(counter)
 
@@ -553,7 +553,8 @@ class DCGAN(object):
                         div_distances_list.append(record)
                         print('added ', record)
                         div_distances_list = sorted(div_distances_list, key=lambda r: r['dist'])
-
+                    else :
+                        print('Not added to list..')
                     with open(log_file_name, 'a') as log_file:
                         log_file.write(str(div_distances_list) + '\n')
                         # print('Saved Sample loss details to the log file..')
