@@ -1,5 +1,5 @@
 airplane
 hot-air_balloon
-snake
-pineapple
 butterfly
+flowers
+chair
