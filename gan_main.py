@@ -3,26 +3,24 @@ import scipy.misc
 import numpy as np
 import sys
 
-
-
-gpu = 'None'
-if 'gpu0' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    gpu = '0'
-elif 'gpu1' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-    gpu = '1'
-elif 'gpu2' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-    gpu = '2'
-elif 'gpu3' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
-    gpu = '3'
-else:
-    print('Please select the gpu...')
-    exit()
-
-print('using GPU ', gpu)
+# gpu = 'None'
+# if 'gpu0' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+#     gpu = '0'
+# elif 'gpu1' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+#     gpu = '1'
+# elif 'gpu2' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+#     gpu = '2'
+# elif 'gpu3' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+#     gpu = '3'
+# else:
+#     print('Please select the gpu...')
+#     exit()
+#
+# print('using GPU ', gpu)
 from model import DCGAN
 from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
@@ -40,7 +38,7 @@ flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
 flags.DEFINE_float("train_size", np.inf, "The size of train images [np.inf]")
 flags.DEFINE_string("input_fname_pattern", "*.jpg", "Glob pattern of filename of input images [*]")
 flags.DEFINE_string("sample_dir", "samples_all", "Directory name to save the image samples [samples]")
-flags.DEFINE_boolean("train", True, "True for training, False for testing [False]")
+flags.DEFINE_boolean("train", False, "True for training, False for testing [False]")
 flags.DEFINE_boolean("crop", True, "True for training, False for testing [False]")
 flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothing [False]")
 
@@ -217,7 +215,17 @@ def main(_):
 
         # Below is codes for visualization
         OPTION = 1
-        visualize(sess, dcgan, FLAGS, OPTION)
+        num_gen_images, images_list = visualize(sess, dcgan, FLAGS, OPTION)
+        with open(os.path.join('/home/prime/Django-Projects/SketchToImage/media/intermediate/',
+                               'num_images_gen.txt'), 'w+') as ffile:
+            ffile.write(str(num_gen_images) + '\n')
+
+        # for i in images_list:
+        #     print(i)
+        with open(os.path.join('/home/prime/Django-Projects/SketchToImage/media/intermediate/',
+                               'gen_images_list.txt'), 'w+') as ffile:
+            for i in images_list:
+                ffile.write(str(i) + '\n')
 
 
 if __name__ == '__main__':

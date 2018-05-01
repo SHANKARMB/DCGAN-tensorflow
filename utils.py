@@ -8,11 +8,13 @@ import random
 import pprint
 import scipy.misc
 import numpy as np
-from time import gmtime, strftime
+from time import gmtime, strftime, time
 from six.moves import xrange
 
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
+
+import crop_images
 
 pp = pprint.PrettyPrinter()
 
@@ -192,6 +194,9 @@ def visualize(sess, dcgan, config, option):
                     './samples/test_%s.png' % strftime("%Y-%m-%d-%H-%M-%S", gmtime()))
     elif option == 1:
         values = np.arange(0, 1, 1. / config.batch_size)
+        tot_num_images = 0
+        tot_images_cropped_list = []
+        counter = 0
         for idx in xrange(dcgan.num_test_images):
             print(" [*] %d" % idx)
             z_sample = np.random.uniform(-1, 1, size=(config.batch_size, dcgan.z_dim))
@@ -213,10 +218,34 @@ def visualize(sess, dcgan, config, option):
                 y_one_hot[np.arange(config.batch_size), y] = 1
 
                 samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
-            else:
-                samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
 
-            save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_arange_%s.png' % (idx))
+            else:
+                print('.......................in visualization..............')
+                samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
+            rand_var = counter
+            filename = 'samples_all/test_%s_%s.png' % (
+                rand_var,
+                idx)
+            save_images(samples, [image_frame_dim, image_frame_dim], filename)
+            abc = 'gen_' + dcgan.dataset_name + str(rand_var)
+            num_images, images_cropped = crop_images.crop(
+                path='/home/prime/Django-Projects/SketchToImage/media/gen_output',
+                ip=filename,
+                name=abc, paths=False
+
+                )
+            tot_num_images = tot_num_images + num_images
+            tot_images_cropped_list = tot_images_cropped_list + images_cropped
+            counter = counter + 1
+        return tot_num_images, tot_images_cropped_list
+
+
+def image_manifold_size(num_images):
+    manifold_h = int(np.floor(np.sqrt(num_images)))
+    manifold_w = int(np.ceil(np.sqrt(num_images)))
+    assert manifold_h * manifold_w == num_images
+    return manifold_h, manifold_w
+
     # elif option == 2:
     #     values = np.arange(0, 1, 1. / config.batch_size)
     #     for idx in [random.randint(0, dcgan.z_dim - 1) for _ in xrange(dcgan.z_dim)]:
@@ -275,10 +304,3 @@ def visualize(sess, dcgan, config, option):
     #     new_image_set = [merge(np.array([images[idx] for images in image_set]), [10, 10]) \
     #                      for idx in range(64) + range(63, -1, -1)]
     #     make_gif(new_image_set, './samples/test_gif_merged.gif', duration=8)
-
-
-def image_manifold_size(num_images):
-    manifold_h = int(np.floor(np.sqrt(num_images)))
-    manifold_w = int(np.ceil(np.sqrt(num_images)))
-    assert manifold_h * manifold_w == num_images
-    return manifold_h, manifold_w
