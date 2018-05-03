@@ -180,7 +180,7 @@ class DCGAN(object):
         self.d_vars = [var for var in t_vars if 'd_' in var.name]
         self.g_vars = [var for var in t_vars if 'g_' in var.name]
 
-        self.saver = tf.train.Saver(max_to_keep=1000)
+        self.saver = tf.train.Saver(max_to_keep=500)
 
     def train(self, config):
         d_optim = tf.train.AdamOptimizer(config.learning_rate, beta1=config.beta1) \
@@ -493,7 +493,7 @@ class DCGAN(object):
             # make a list and insert and pop or leave it as it is..
 
             os.makedirs('cropped_sample_images/' + self.dataset_name, exist_ok=True)
-            if epoch >= 100 and epoch % 50 == 0:
+            if epoch >= 100 and epoch % 100 == 0:
                 try:
                     samples, _, _ = self.sess.run(
                         [self.sampler, self.d_loss, self.g_loss],
