@@ -203,6 +203,7 @@ def visualize(sess, dcgan, config, option):
             for kdx, z in enumerate(z_sample):
                 z[idx] = values[kdx]
 
+            rand_var = counter
             if config.dataset == "mnist":
                 y = np.random.choice(10, config.batch_size)
                 y_one_hot = np.zeros((config.batch_size, 10))
@@ -220,9 +221,11 @@ def visualize(sess, dcgan, config, option):
                 samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample, dcgan.y: y_one_hot})
 
             else:
-                print('.......................in visualization..............')
+                print('.......................saving image ' + str(idx) + (' test_%s_%s.png' % (
+                    rand_var,
+                    idx)) + '..............')
                 samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
-            rand_var = counter
+
             filename = 'samples_all/test_%s_%s.png' % (
                 rand_var,
                 idx)
@@ -233,7 +236,7 @@ def visualize(sess, dcgan, config, option):
                 ip=filename,
                 name=abc, paths=False
 
-                )
+            )
             tot_num_images = tot_num_images + num_images
             tot_images_cropped_list = tot_images_cropped_list + images_cropped
             counter = counter + 1

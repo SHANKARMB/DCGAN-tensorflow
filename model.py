@@ -1,6 +1,6 @@
 from __future__ import division
 import os
-import time
+from time import time
 import math
 from glob import glob
 import tensorflow as tf
@@ -227,7 +227,7 @@ class DCGAN(object):
                 sample_inputs = np.array(sample).astype(np.float32)
 
         counter = 1
-        start_time = time.time()
+        start_time = time()
         could_load, checkpoint_counter = self.load(self.checkpoint_dir)
         if could_load:
             counter = checkpoint_counter
@@ -240,7 +240,7 @@ class DCGAN(object):
         if not os.path.exists('log_files'):
             os.makedirs('log_files')
 
-        log_file_name = os.path.join('log_files/' + 'log_' + self.dataset_name + str(time.time() * 100))
+        log_file_name = os.path.join('log_files/' + 'log_' + self.dataset_name + str(time() * 100))
         print('log_file_name is ', log_file_name)
         d_loss_list = []
         g_loss_list = []
@@ -417,7 +417,7 @@ class DCGAN(object):
                 counter += 1
                 print("Epoch: [%2d/%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
                       % (epoch, config.epoch, idx, batch_idxs,
-                         time.time() - start_time, errD_fake + errD_real, errG))
+                         time() - start_time, errD_fake + errD_real, errG))
 
                 # if np.mod(counter, batch_idxs) == batch_idxs - 1:
                 #     with open(log_file_name, 'a') as log_file:
