@@ -431,7 +431,7 @@ class DCGAN(object):
                 #     d_loss_list.append(errD_fake + errD_real)
                 #     g_loss_list.append(errG)
 
-                if np.mod(counter, 100) == 1:
+                if np.mod(counter, 10) == 1:
                     if config.dataset == 'mnist':
                         samples, d_loss, g_loss = self.sess.run(
                             [self.sampler, self.d_loss, self.g_loss],
@@ -491,7 +491,7 @@ class DCGAN(object):
             # make a list and insert and pop or leave it as it is..
 
             os.makedirs('cropped_sample_images/' + self.dataset_name, exist_ok=True)
-            if epoch > 100 and epoch % 10 == 0:
+            if epoch > 100 and epoch % 50 == 0:
                 try:
                     samples, _, _ = self.sess.run(
                         [self.sampler, self.d_loss, self.g_loss],
