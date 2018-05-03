@@ -3,6 +3,8 @@ import scipy.misc
 import numpy as np
 import sys
 
+INTERMEDIATE_PATH = '/home/prime/Django-Projects/SketchToImage/media/intermediate/'
+OUTPUT_PATH = '/home/prime/Django-Projects/SketchToImage/media/gen_output/'
 # gpu = 'None'
 # if 'gpu0' in sys.argv:
 #     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
@@ -58,6 +60,10 @@ flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save th
 flags.DEFINE_string("dataset_dir", "dataset/gan_files/images5", "Dataset dir where data is in 'dataset' dir")
 flags.DEFINE_string("dataset", "airplane", "The name of dataset [images5,celebA, mnist, lsun]")
 flags.DEFINE_string("base_dir", "/home/prime/ProjectWork/training/", "base dir")
+flags.DEFINE_string("intermediate_path", '/home/prime/Django-Projects/SketchToImage/media/intermediate/',
+                    "intermediate path")
+flags.DEFINE_string("output_path", '/home/prime/Django-Projects/SketchToImage/media/gen_output/',
+                    "output_path")
 
 FLAGS = flags.FLAGS
 
@@ -121,6 +127,7 @@ def test_gan(learning_rate=0.0002, input_width=128, input_height=128,
 
 
 def main(_):
+    global INTERMEDIATE_PATH, OUTPUT_PATH
     pp.pprint(flags.FLAGS.__flags)
 
     if FLAGS.input_width is None:
@@ -198,6 +205,8 @@ def main(_):
                 base_dir=FLAGS.base_dir,
                 num_test_images=FLAGS.num_test_images
             )
+            INTERMEDIATE_PATH = FLAGS.intermediate_path
+            OUTPUT_PATH = FLAGS.output_path
 
         show_all_variables()
         if FLAGS.train:
@@ -216,14 +225,14 @@ def main(_):
 
         # Below is codes for visualization
         OPTION = 1
-        num_gen_images, images_list = visualize(sess, dcgan, FLAGS, OPTION)
-        with open(os.path.join('/home/prime/Django-Projects/SketchToImage/media/intermediate/',
+        num_gen_images, images_list = visualize(sess, dcgan, FLAGS, OPTION, generate_output_path=OUTPUT_PATH)
+        with open(os.path.join(INTERMEDIATE_PATH,
                                'num_images_gen.txt'), 'w+') as ffile:
             ffile.write(str(num_gen_images) + '\n')
 
         # for i in images_list:
         #     print(i)
-        with open(os.path.join('/home/prime/Django-Projects/SketchToImage/media/intermediate/',
+        with open(os.path.join(INTERMEDIATE_PATH,
                                'gen_images_list.txt'), 'w+') as ffile:
             for i in images_list:
                 ffile.write(str(i) + '\n')

@@ -185,7 +185,8 @@ def make_gif(images, fname, duration=2, true_image=False):
     clip.write_gif(fname, fps=len(images) / duration)
 
 
-def visualize(sess, dcgan, config, option):
+def visualize(sess, dcgan, config, option,
+              generate_output_path='/home/prime/Django-Projects/SketchToImage/media/gen_output'):
     image_frame_dim = int(math.ceil(config.batch_size ** .5))
     if option == 0:
         z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
@@ -232,7 +233,7 @@ def visualize(sess, dcgan, config, option):
             save_images(samples, [image_frame_dim, image_frame_dim], filename)
             abc = 'gen_' + dcgan.dataset_name + str(rand_var)
             num_images, images_cropped = crop_images.crop(
-                path='/home/prime/Django-Projects/SketchToImage/media/gen_output',
+                path=generate_output_path,
                 ip=filename,
                 name=abc, paths=False
 
