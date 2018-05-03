@@ -54,7 +54,7 @@ flags.DEFINE_integer("output_width", 128,
 flags.DEFINE_integer("num_classes", 1, "Number of classes to train on. [100]")
 flags.DEFINE_integer("num_test_images", 10, "Number of classes to train on. [100]")
 flags.DEFINE_integer("noise_dim", 100, "Noise dim [100]")
-flags.DEFINE_string("checkpoint_dir", "trained/gan/", "Directory name to save the checkpoints [checkpoint]")
+flags.DEFINE_string("checkpoint_dir", "trained/gan/new_arch", "Directory name to save the checkpoints [checkpoint]")
 flags.DEFINE_string("dataset_dir", "dataset/gan_files/images5", "Dataset dir where data is in 'dataset' dir")
 flags.DEFINE_string("dataset", "airplane", "The name of dataset [images5,celebA, mnist, lsun]")
 flags.DEFINE_string("base_dir", "/home/prime/ProjectWork/training/", "base dir")
