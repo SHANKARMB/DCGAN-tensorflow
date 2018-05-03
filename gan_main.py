@@ -200,10 +200,11 @@ def main(_):
             )
 
         show_all_variables()
-        print('going to train')
         if FLAGS.train:
+            print('going to train')
             dcgan.train(FLAGS)
         else:
+            print('Saving Images..')
             if not dcgan.load(FLAGS.checkpoint_dir)[0]:
                 raise Exception("[!] Train a model first, then run test mode")
 
