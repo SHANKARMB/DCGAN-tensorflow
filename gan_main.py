@@ -33,8 +33,8 @@ base_dirs = ["/content/training/",
              '/home/cprmi01/FinalSemProject/training']
 
 flags = tf.app.flags
-flags.DEFINE_float("learning_rate", 0.00009, "Learning rate of for adam [0.0002]")
-flags.DEFINE_float("beta1", 0.5, "Momentum term of adam [0.5]")
+flags.DEFINE_float("learning_rate", 0.0007, "Learning rate of for adam [0.0002]")
+flags.DEFINE_float("beta1", 0.75, "Momentum term of adam [0.5]")
 flags.DEFINE_float("train_size", np.inf, "The size of train images [np.inf]")
 flags.DEFINE_string("input_fname_pattern", "*.jpg", "Glob pattern of filename of input images [*]")
 flags.DEFINE_string("sample_dir", "samples_all", "Directory name to save the image samples [samples]")
