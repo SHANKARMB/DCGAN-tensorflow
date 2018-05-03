@@ -70,16 +70,17 @@ class DCGAN(object):
         # batch normalization : deals with poor initialization helps gradient flow
         self.d_bn1 = batch_norm(name='d_bn1')
         self.d_bn2 = batch_norm(name='d_bn2')
-
+        self.d_bn3 = batch_norm(name='d_bn3')
         if not self.y_dim:
-            self.d_bn3 = batch_norm(name='d_bn3')
+            self.d_bn4 = batch_norm(name='d_bn4')
 
         self.g_bn0 = batch_norm(name='g_bn0')
         self.g_bn1 = batch_norm(name='g_bn1')
         self.g_bn2 = batch_norm(name='g_bn2')
+        self.g_bn3 = batch_norm(name='g_bn3')
         self.base_dir = base_dir
         if not self.y_dim:
-            self.g_bn3 = batch_norm(name='g_bn3')
+            self.g_bn4 = batch_norm(name='g_bn4')
 
         self.dataset_name = dataset_name
         self.input_fname_pattern = input_fname_pattern
@@ -572,7 +573,7 @@ class DCGAN(object):
                 h1 = lrelu(self.d_bn1(conv2d(h0, self.df_dim * 2, name='d_h1_conv')))
                 h2 = lrelu(self.d_bn2(conv2d(h1, self.df_dim * 4, name='d_h2_conv')))
                 h3 = lrelu(self.d_bn3(conv2d(h2, self.df_dim * 8, name='d_h3_conv')))
-                h4 = lrelu(self.d_bn3(conv2d(h3, self.df_dim * 16, name='d_h4_conv')))
+                h4 = lrelu(self.d_bn4(conv2d(h3, self.df_dim * 16, name='d_h4_conv')))
                 h5 = linear(tf.reshape(h4, [self.batch_size, -1]), 1, 'd_h5_lin')
 
                 return tf.nn.sigmoid(h5), h5
@@ -627,7 +628,7 @@ class DCGAN(object):
 
                 h4, self.h4_w, self.h4_b = deconv2d(
                     h3, [self.batch_size, s_h2, s_w2, self.gf_dim * 1], name='g_h4', with_w=True)
-                h4 = tf.nn.relu(self.g_bn3(h4))
+                h4 = tf.nn.relu(self.g_bn4(h4))
 
                 h5, self.h5_w, self.h5_b = deconv2d(
                     h4, [self.batch_size, s_h, s_w, self.c_dim], name='g_h5', with_w=True)
@@ -687,7 +688,7 @@ class DCGAN(object):
                 h3 = tf.nn.relu(self.g_bn3(h3, train=False))
 
                 h4 = deconv2d(h3, [self.batch_size, s_h2, s_w2, self.gf_dim * 1], name='g_h4')
-                h4 = tf.nn.relu(self.g_bn3(h4, train=False))
+                h4 = tf.nn.relu(self.g_bn4(h4, train=False))
 
                 h5 = deconv2d(h4, [self.batch_size, s_h, s_w, self.c_dim], name='g_h5')
 
