@@ -472,14 +472,15 @@ class DCGAN(object):
                                     self.inputs: sample_inputs,
                                 },
                             )
+                            os.makedirs('samples/' + self.dataset_name, exist_ok=True)
+                            sample_image_file_name = './samples/{}/train_{:02d}_{:04d}.png' \
+                                .format(self.dataset_name, epoch, batch_idxs)
+
                             save_images(samples, image_manifold_size(samples.shape[0]),
-                                        './{}/{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, self.dataset_name,
-                                                                                 epoch, idx))
+                                        sample_image_file_name
+                                        )
                             print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
 
-                            # with open(log_file_name, 'a') as log_file:
-                            #     log_file.write("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss) + '\n')
-                            #     print('Saved Sample loss details to the log file..')
                         except Exception as ex:
                             print("one pic error!...")
                             print(ex)
