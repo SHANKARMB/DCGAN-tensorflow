@@ -431,7 +431,7 @@ class DCGAN(object):
                 #     d_loss_list.append(errD_fake + errD_real)
                 #     g_loss_list.append(errG)
 
-                if np.mod(counter, 10) == 1:
+                if np.mod(counter, 20) == 1:
                     if config.dataset == 'mnist':
                         samples, d_loss, g_loss = self.sess.run(
                             [self.sampler, self.d_loss, self.g_loss],
