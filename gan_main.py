@@ -3,24 +3,24 @@ import scipy.misc
 import numpy as np
 import sys
 
-gpu = 'None'
-if 'gpu0' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-    gpu = '0'
-elif 'gpu1' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
-    gpu = '1'
-elif 'gpu2' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '2'
-    gpu = '2'
-elif 'gpu3' in sys.argv:
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
-    gpu = '3'
-else:
-    print('Please select the gpu...')
-    exit()
-
-print('using GPU ', gpu)
+# gpu = 'None'
+# if 'gpu0' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+#     gpu = '0'
+# elif 'gpu1' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+#     gpu = '1'
+# elif 'gpu2' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '2'
+#     gpu = '2'
+# elif 'gpu3' in sys.argv:
+#     os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+#     gpu = '3'
+# else:
+#     print('Please select the gpu...')
+#     exit()
+#
+# print('using GPU ', gpu)
 from model import DCGAN
 from utils import pp, visualize, to_json, show_all_variables
 import tensorflow as tf
